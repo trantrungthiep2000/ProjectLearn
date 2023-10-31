@@ -1,4 +1,9 @@
-﻿namespace Project.API.Installers;
+﻿using Project.API.Options;
+using Project.Application.MappingProfiles;
+using MediatR;
+using Project.Application.Identities.Commands;
+
+namespace Project.API.Installers;
 
 /// <summary>
 /// Information of web application builder installer
@@ -18,5 +23,11 @@ public class WebApplicationBuilderInstaller : IWebApplicationBuilderInstaller
         builder.Services.AddEndpointsApiExplorer();
 
         builder.Services.AddSwaggerGen();
+
+        builder.Services.ConfigureOptions<ConfigSwagger>();
+
+        builder.Services.AddAutoMapper(new[] { typeof(IdentityMapping) });
+
+        builder.Services.AddMediatR(new[] { typeof(RegisterCommand) });
     }
 }
