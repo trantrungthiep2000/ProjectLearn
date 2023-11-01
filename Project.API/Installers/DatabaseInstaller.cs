@@ -10,6 +10,11 @@ namespace Project.API.Installers;
 /// </summary>
 public class DatabaseInstaller : IWebApplicationBuilderInstaller
 {
+    /// <summary>
+    /// Installer web application builder
+    /// </summary>
+    /// <param name="builder">WebApplicationBuilder</param>
+    /// CreatedBy: ThiepTT(30/10/2023)
     public void InstallerWebApplicationBuilder(WebApplicationBuilder builder)
     {
         var connectionStrings = builder.Configuration.GetConnectionString("DefaultConnection");

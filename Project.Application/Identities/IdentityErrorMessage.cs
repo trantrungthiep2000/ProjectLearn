@@ -8,4 +8,5 @@ public static class IdentityErrorMessage
 {
     public static string IdentityUserAlreadyExists = "This email has been registered";
     public static string IdentityUserIncorrectPassword = "Email or password is incorrect";
+    public static string IdentityUserNotExists = "This email has not been registered";
 }

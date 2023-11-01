@@ -1,7 +1,8 @@
-﻿using Project.API.Options;
-using Project.Application.MappingProfiles;
-using MediatR;
+﻿using MediatR;
+using Project.API.Options;
 using Project.Application.Identities.Commands;
+using Project.Application.MappingProfiles;
+using System.Reflection;
 
 namespace Project.API.Installers;
 
@@ -26,8 +27,8 @@ public class WebApplicationBuilderInstaller : IWebApplicationBuilderInstaller
 
         builder.Services.ConfigureOptions<ConfigSwagger>();
 
-        builder.Services.AddAutoMapper(new[] { typeof(IdentityMapping) });
+        builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-        builder.Services.AddMediatR(new[] { typeof(RegisterCommand) });
+        builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
     }
 }

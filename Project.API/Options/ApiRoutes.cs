@@ -21,5 +21,10 @@ public static class ApiRoutes
         /// Register
         /// </summary>
         public const string Register = "Register";
+
+        /// <summary>
+        /// Login
+        /// </summary>
+        public const string Login = "Login";
     }
 }

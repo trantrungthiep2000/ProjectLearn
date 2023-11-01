@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Project.API.Options;
 using Project.Application.Dtos.Requests;
 using Project.Application.Identities.Commands;
+using Project.Application.Models;
 
 namespace Project.API.Controllers;
 
@@ -35,9 +36,30 @@ public class AuthenticationsController : BaseController
     [Route($"{ApiRoutes.Authentication.Register}")]
     public async Task<IActionResult> Register(RegisterRequest registerRequest, CancellationToken cancellationToken)
     {
-        var command = _mapper.Map<RegisterCommand>(registerRequest);
+        RegisterCommand command = _mapper.Map<RegisterCommand>(registerRequest);
 
-        var response = await _mediator.Send(command, cancellationToken);
+        OperationResult<string> response = await _mediator.Send(command, cancellationToken);
+
+        if (response.IsError)
+            return HandlerErrorResponse(response.Errors);
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Login
+    /// </summary>
+    /// <param name="loginRequest">LoginRequest</param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>IActionResult</returns>
+    /// CreatedBy: ThiepTT(01/11/2023)
+    [HttpPost]
+    [Route($"{ApiRoutes.Authentication.Login}")]
+    public async Task<IActionResult> Login(LoginRequest loginRequest, CancellationToken cancellationToken)
+    {
+        LoginCommand command = _mapper.Map<LoginCommand>(loginRequest);
+
+        OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
         if (response.IsError)
             return HandlerErrorResponse(response.Errors);

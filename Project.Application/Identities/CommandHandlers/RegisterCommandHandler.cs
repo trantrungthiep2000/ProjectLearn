@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage;
 using Project.Application.Identities.Commands;
 using Project.Application.Models;
+using Project.Application.Validators;
 using Project.DAL.Data;
 using Project.Domain.Aggregates;
-using Project.Domain.Validators;
 
 namespace Project.Application.Identities.CommandHandlers;
 
@@ -48,17 +48,10 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
             UserProfile userProfile = _mapper.Map<UserProfile>(request);
 
             // Validate request of user profile
-            ValidateUserProfile(userProfile, result);
-
-            if (result.IsError) { return result; }
-
-            IdentityUser? identityUser = await _userManager.FindByEmailAsync(request.Email);
+            if (ValidateUserProfile(userProfile, result)) { return result; }
 
             // Check email has been registered
-            if (identityUser is not null)
-            {
-                result.AddError(ErrorCode.NotFound, IdentityErrorMessage.IdentityUserAlreadyExists);
-            }
+            if (await IsEmailRegisteredAsync(request.Email, result)) { return result; }
 
             // Create identity user
             await CreateIdentityUserAsync(request, result, transaction, cancellationToken);
@@ -87,9 +80,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
     /// </summary>
     /// <param name="userProfile">UserProfile</param>
     /// <param name="result">OperationResult<string></param>
-    /// <returns>OperationResult<string></returns>
+    /// <returns>True | False</returns>
     /// CreatedBy: ThiepTT(31/10/2023)
-    private void ValidateUserProfile(UserProfile userProfile, OperationResult<string> result)
+    private bool ValidateUserProfile(UserProfile userProfile, OperationResult<string> result)
     {
         UserProfileValidator validator = new UserProfileValidator();
 
@@ -101,7 +94,32 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
             {
                 result.AddError(ErrorCode.BadRequest, error.ErrorMessage);
             }
+
+            return true;
         }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Is email registered
+    /// </summary>
+    /// <param name="email">Email</param>
+    /// <param name="result">OperationResult<string></param>
+    /// <returns>True | False</returns>
+    /// CreatedBy: ThiepTT(01/11/2023)
+    private async Task<bool> IsEmailRegisteredAsync(string email, OperationResult<string> result)
+    {
+        IdentityUser? identityUser = await _userManager.FindByEmailAsync(email);
+
+        if (identityUser is not null)
+        {
+            result.AddError(ErrorCode.NotFound, IdentityErrorMessage.IdentityUserAlreadyExists);
+
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>

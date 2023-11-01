@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Project.Domain.Aggregates;
 
-namespace Project.Domain.Validators;
+namespace Project.Application.Validators;
 
 /// <summary>
 /// Information of product validator
