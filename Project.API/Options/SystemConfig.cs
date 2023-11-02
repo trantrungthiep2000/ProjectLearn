@@ -30,4 +30,14 @@ public static class SystemConfig
     /// Internal server error
     /// </summary>
     public const string InternalServerError = "Internal server error";
+
+    /// <summary>
+    /// Id of user profile
+    /// </summary>
+    public const string UserProfileId = "UserProfileId";
+
+    /// <summary>
+    /// Application/json
+    /// </summary>
+    public const string ApplicationJson = "application/json";
 }

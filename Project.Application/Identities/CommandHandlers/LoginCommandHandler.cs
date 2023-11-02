@@ -138,10 +138,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
     /// CreatedBy: ThiepTT(01/11/2023)
     private async Task<UserProfile> GetUserProfileByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        UserProfile? userProfile = await _dataContext.UserProfiles
+        UserProfile? userProfileById = await _dataContext.UserProfiles
             .FirstOrDefaultAsync(userProfile => userProfile.Email.Trim().ToLower().Equals(email.Trim().ToLower()), cancellationToken);
 
-        return userProfile!;
+        return userProfileById!;
     }
 
     /// <summary>

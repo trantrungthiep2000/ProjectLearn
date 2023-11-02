@@ -40,8 +40,7 @@ public class AuthenticationsController : BaseController
 
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
-        if (response.IsError)
-            return HandlerErrorResponse(response.Errors);
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         return Ok(response);
     }
@@ -61,8 +60,7 @@ public class AuthenticationsController : BaseController
 
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
-        if (response.IsError)
-            return HandlerErrorResponse(response.Errors);
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         return Ok(response);
     }

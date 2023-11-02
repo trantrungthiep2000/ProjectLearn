@@ -24,19 +24,19 @@ public class BaseController : ControllerBase
         {
             errorResponse = ConfigErrorResponse(errorResponse, errors, (int)ErrorCode.BadRequest, SystemConfig.BadRequest);
 
-            return this.BadRequest(errorResponse);
+            return BadRequest(errorResponse);
         }
 
         if (errors.Any(error => error.Code == ErrorCode.NotFound))
         {
             errorResponse = ConfigErrorResponse(errorResponse, errors, (int)ErrorCode.NotFound, SystemConfig.NotFound);
 
-            return this.NotFound(errorResponse);
+            return NotFound(errorResponse);
         }
 
         errorResponse = ConfigErrorResponse(errorResponse, errors, (int)ErrorCode.InternalServerError, SystemConfig.InternalServerError);
 
-        return this.StatusCode((int)ErrorCode.InternalServerError, errorResponse);
+        return StatusCode((int)ErrorCode.InternalServerError, errorResponse);
     }
 
     /// <summary>

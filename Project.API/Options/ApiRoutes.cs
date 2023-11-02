@@ -27,4 +27,26 @@ public static class ApiRoutes
         /// </summary>
         public const string Login = "Login";
     }
+
+    /// <summary>
+    /// Information of user profile
+    /// CreatedBy: ThiepTT(02/11/2023)
+    /// </summary>
+    public class UserProfile
+    {
+        /// <summary>
+        /// Get information of user profile
+        /// </summary>
+        public const string GetInformationOfUserProfile = "GetInformationOfUserProfile";
+
+        /// <summary>
+        /// Update information of user profile
+        /// </summary>
+        public const string UpdateInformationOfUserProfile = "UpdateInformationOfUserProfile";
+
+        /// <summary>
+        /// Remove account
+        /// </summary>
+        public const string RemoveAccount = "RemoveAcount";
+    }
 }

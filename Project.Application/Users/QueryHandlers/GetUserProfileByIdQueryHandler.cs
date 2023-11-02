@@ -1,9 +1,12 @@
-﻿using MediatR;
+﻿using Dapper;
+using MediatR;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Project.Application.Models;
 using Project.Application.Users.Queries;
 using Project.DAL.Data;
 using Project.Domain.Aggregates;
+using System.Data;
 
 namespace Project.Application.Users.QueryHandlers;
 
@@ -33,18 +36,22 @@ public class GetUserProfileByIdQueryHandler : IRequestHandler<GetUserProfileById
 
         try
         {
-            UserProfile? userProfileById = await _dataContext.UserProfiles
-                .FirstOrDefaultAsync(userProfile => userProfile.UserProfileId == request.UserProfileId, cancellationToken);
-
-            if (userProfileById is null)
+            using (IDbConnection dbConnection = new SqlConnection(_dataContext.Database.GetConnectionString()))
             {
-                result.AddError(ErrorCode.NotFound, 
-                    string.Format(UserProfileErrorMessage.UserProfileNotFound, request.UserProfileId));
+                string sqlQuery = "Proc_GetUserProfileById";
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@UserProfileId", request.UserProfileId);
+                UserProfile? userProfile = await dbConnection
+                    .QueryFirstOrDefaultAsync<UserProfile>(sqlQuery, param: parameters, commandType: CommandType.StoredProcedure);
 
-                return result;
+                if (userProfile is null) 
+                {
+                    result.AddError(ErrorCode.NotFound, string.Format(UserProfileErrorMessage.UserProfileNotFound, request.UserProfileId));
+                    return result;
+                }
+
+                result.Data = userProfile;
             }
-
-            result.Data = userProfileById;
         }
         catch (Exception ex)
         {

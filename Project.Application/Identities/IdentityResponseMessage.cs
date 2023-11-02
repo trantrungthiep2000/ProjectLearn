@@ -6,5 +6,8 @@
 /// </summary>
 public static class IdentityResponseMessage
 {
+    /// <summary>
+    /// register success
+    /// </summary>
     public const string RegisterSuccess = "Register user success";
 }

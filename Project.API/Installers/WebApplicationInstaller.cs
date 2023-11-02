@@ -1,4 +1,6 @@
-﻿namespace Project.API.Installers;
+﻿using Project.API.Middlewares;
+
+namespace Project.API.Installers;
 
 /// <summary>
 /// Information of web application installer
@@ -18,6 +20,8 @@ public class WebApplicationInstaller : IWebApplicationInstaller
         app.UseSwaggerUI();
 
         app.UseHttpsRedirection();
+
+        app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseAuthentication();
 
