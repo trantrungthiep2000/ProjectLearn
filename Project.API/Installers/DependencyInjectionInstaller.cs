@@ -1,4 +1,8 @@
-﻿using Project.Application.Services;
+﻿using Microsoft.AspNetCore.Identity;
+using Project.Application.Services;
+using Project.Domain.Aggregates;
+using Project.Infrastructure.Interfaces;
+using Project.Infrastructure.Repositories;
 
 namespace Project.API.Installers;
 
@@ -16,5 +20,11 @@ public class DependencyInjectionInstaller : IWebApplicationBuilderInstaller
     public void InstallerWebApplicationBuilder(WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IdentityService>();
+
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        builder.Services.AddScoped<IIdentityUserRepository<IdentityUser>, IdentityUserRepository>();
+
+        builder.Services.AddScoped<IUserProfileRepository<UserProfile>, UserProfileRepository>();
     }
 }

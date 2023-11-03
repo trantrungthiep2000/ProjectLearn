@@ -35,6 +35,21 @@ public static class ApiRoutes
     public class UserProfile
     {
         /// <summary>
+        /// Get user profile by id
+        /// </summary>
+        public const string GetUserProfileById = "GetUserProfileById";
+
+        /// <summary>
+        /// Update user profile by id
+        /// </summary>
+        public const string UpdateUserProfileById = "UpdateUserProfileById";
+
+        /// <summary>
+        /// Remove user profile by id
+        /// </summary>
+        public const string RemoveUserProfileById = "RemoveUserProfileById";
+
+        /// <summary>
         /// Get information of user profile
         /// </summary>
         public const string GetInformationOfUserProfile = "GetInformationOfUserProfile";

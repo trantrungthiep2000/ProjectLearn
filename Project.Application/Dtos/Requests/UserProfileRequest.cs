@@ -12,11 +12,6 @@ public class UserProfileRequest
     public string FullName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Email
-    /// </summary>
-    public string Email { get; set; } = string.Empty;
-
-    /// <summary>
     /// Phone number
     /// </summary>
     public string PhoneNumber { get; set; } = string.Empty;

@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Project.Application.Identities.Commands;
 using Project.Application.Models;
 using Project.Application.Validators;
-using Project.DAL.Data;
 using Project.Domain.Aggregates;
+using Project.Infrastructure.Interfaces;
 
 namespace Project.Application.Identities.CommandHandlers;
 
@@ -17,17 +17,19 @@ namespace Project.Application.Identities.CommandHandlers;
 /// </summary>
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, OperationResult<string>>
 {
-    private readonly DataContext _dataContext;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMapper _mapper;
+    private readonly IUserProfileRepository<UserProfile> _userProfileRepository;
 
-    public RegisterCommandHandler(DataContext dataContext,
-        UserManager<IdentityUser> userManager,
-        IMapper mapper)
+    public RegisterCommandHandler(IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager, IMapper mapper,
+        IUserProfileRepository<UserProfile> userProfileRepository)
     {
-        _dataContext = dataContext;
+        _unitOfWork = unitOfWork;
         _userManager = userManager;
         _mapper = mapper;
+        _userProfileRepository = userProfileRepository;
+
     }
 
     /// <summary>
@@ -41,7 +43,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
     {
         OperationResult<string> result = new OperationResult<string>();
 
-        await using IDbContextTransaction transaction = await _dataContext.Database.BeginTransactionAsync(cancellationToken);
+        await using IDbContextTransaction transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
         try
         {
@@ -59,9 +61,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
             if (result.IsError) { return result; }
 
             // Create user profile
-            await CreateUserProfileAsync(userProfile, cancellationToken);
+            CreateUserProfile(userProfile);
 
-            await _dataContext.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
             result.Data = IdentityResponseMessage.RegisterSuccess;
@@ -150,17 +152,16 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
     }
 
     /// <summary>
-    /// Create user profile async
+    /// Create user profile
     /// </summary>
     /// <param name="userProfile">UserProfile</param>
-    /// <param name="cancellationToken">CancellationToken</param>
-    /// <returns>Task</returns>
+    /// <returns>void</returns>
     /// CreatedBy: ThiepTT(31/10/2023)
-    private async Task CreateUserProfileAsync(UserProfile userProfile, CancellationToken cancellationToken)
+    private void CreateUserProfile(UserProfile userProfile)
     {
         UserProfile userProfileCreate = UserProfile.CreateUserProfile(userProfile.FullName,
             userProfile.Email, userProfile.PhoneNumber, userProfile.DateOfBirth);
 
-        await _dataContext.UserProfiles.AddAsync(userProfileCreate, cancellationToken);
+        _userProfileRepository.Create(userProfileCreate);
     }
 }

@@ -10,4 +10,9 @@ public static class UserProfileResponseMessage
     /// Remove account success
     /// </summary>
     public const string RemoveAccountSuccess = "Remove account success";
+
+    /// <summary>
+    /// Update account success
+    /// </summary>
+    public const string UpdateAccountSuccess = "Update account success";
 }

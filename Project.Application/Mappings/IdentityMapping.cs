@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Project.Application.Dtos.Requests;
 using Project.Application.Identities.Commands;
+using Project.Application.Users.Commands;
 using Project.Domain.Aggregates;
 
 namespace Project.Application.MappingProfiles;
@@ -16,5 +17,6 @@ public class IdentityMapping : Profile
         CreateMap<UserProfile, RegisterCommand>().ReverseMap();
         CreateMap<RegisterCommand, RegisterRequest>().ReverseMap();
         CreateMap<LoginCommand, LoginRequest>().ReverseMap();
+        CreateMap<UpdateUserProfileCommand, UserProfileRequest>().ReverseMap();
     }
 }

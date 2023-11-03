@@ -1,11 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Project.Application.Models;
 using Project.Application.Users.Commands;
-using Project.DAL.Data;
 using Project.Domain.Aggregates;
+using Project.Infrastructure.Interfaces;
 
 namespace Project.Application.Users.CommandHandlers;
 
@@ -15,11 +14,16 @@ namespace Project.Application.Users.CommandHandlers;
 /// </summary>
 public class RemoveAccountCommandHandler : IRequestHandler<RemoveAccountCommand, OperationResult<string>>
 {
-    private readonly DataContext _dataContext;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserProfileRepository<UserProfile> _userProfileRepository;
+    private readonly IIdentityUserRepository<IdentityUser> _identityUserRepository;
 
-    public RemoveAccountCommandHandler(DataContext dataContext)
+    public RemoveAccountCommandHandler(IUnitOfWork unitOfWork, IUserProfileRepository<UserProfile> userProfileRepository,
+        IIdentityUserRepository<IdentityUser> identityUserRepository)
     {
-        _dataContext = dataContext;
+        _unitOfWork = unitOfWork;
+        _userProfileRepository = userProfileRepository;
+        _identityUserRepository = identityUserRepository;
     }
 
     /// <summary>
@@ -33,12 +37,11 @@ public class RemoveAccountCommandHandler : IRequestHandler<RemoveAccountCommand,
     {
         OperationResult<string> result = new OperationResult<string>();
 
-        await using IDbContextTransaction transaction = await _dataContext.Database.BeginTransactionAsync(cancellationToken);
+        await using IDbContextTransaction transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            UserProfile? userProfileById = await _dataContext.UserProfiles
-                .FirstOrDefaultAsync(userProfile => userProfile.UserProfileId == request.UserProfileId, cancellationToken);
+            UserProfile userProfileById = await _userProfileRepository.GetByIdAsync(request.UserProfileId);
 
             if (userProfileById is null)
             {
@@ -46,8 +49,7 @@ public class RemoveAccountCommandHandler : IRequestHandler<RemoveAccountCommand,
                 return result;
             }
 
-            IdentityUser? identityUser = await _dataContext.Users
-                .FirstOrDefaultAsync(user => user.Email!.Trim().ToLower().Equals(userProfileById.Email.Trim().ToLower()), cancellationToken);
+            IdentityUser identityUser = await _identityUserRepository.GetUserByEmailAsync(userProfileById.Email, cancellationToken);
 
             if (identityUser is null)
             {
@@ -55,9 +57,10 @@ public class RemoveAccountCommandHandler : IRequestHandler<RemoveAccountCommand,
                 return result;
             }
 
-            _dataContext.Users.Remove(identityUser);
-            _dataContext.UserProfiles.Remove(userProfileById);
-            await _dataContext.SaveChangesAsync(cancellationToken);
+            _identityUserRepository.Delete(identityUser);
+            _userProfileRepository.Delete(userProfileById);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
             result.Data = UserProfileResponseMessage.RemoveAccountSuccess;

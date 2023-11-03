@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Project.Domain.Aggregates;
-using System.Reflection.Emit;
 
 namespace Project.DAL.Data;
 
@@ -43,7 +42,7 @@ public class DataContext : IdentityDbContext
 
         builder.Entity<IdentityUserLogin<string>>().HasKey(identityUserLogin => identityUserLogin.UserId);
 
-        builder.Entity<IdentityUserRole<string>>().HasKey(identityUserRole =>  identityUserRole.UserId);
+        builder.Entity<IdentityUserRole<string>>().HasKey(identityUserRole => identityUserRole.UserId);
 
         builder.Entity<IdentityUserToken<string>>().HasKey(identityUserToken => identityUserToken.UserId);
     }

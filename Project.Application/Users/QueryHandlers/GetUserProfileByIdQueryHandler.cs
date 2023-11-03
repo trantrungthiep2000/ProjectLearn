@@ -1,12 +1,8 @@
-﻿using Dapper;
-using MediatR;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
 using Project.Application.Models;
 using Project.Application.Users.Queries;
-using Project.DAL.Data;
 using Project.Domain.Aggregates;
-using System.Data;
+using Project.Infrastructure.Interfaces;
 
 namespace Project.Application.Users.QueryHandlers;
 
@@ -16,11 +12,11 @@ namespace Project.Application.Users.QueryHandlers;
 /// </summary>
 public class GetUserProfileByIdQueryHandler : IRequestHandler<GetUserProfileByIdQuery, OperationResult<UserProfile>>
 {
-    private readonly DataContext _dataContext;
+    private readonly IUserProfileRepository<UserProfile> _userProfileRepository;
 
-    public GetUserProfileByIdQueryHandler(DataContext dataContext)
+    public GetUserProfileByIdQueryHandler(IUserProfileRepository<UserProfile> userProfileRepository)
     {
-        _dataContext = dataContext;
+        _userProfileRepository = userProfileRepository;
     }
 
     /// <summary>
@@ -36,28 +32,21 @@ public class GetUserProfileByIdQueryHandler : IRequestHandler<GetUserProfileById
 
         try
         {
-            using (IDbConnection dbConnection = new SqlConnection(_dataContext.Database.GetConnectionString()))
+            UserProfile userProfileById = await _userProfileRepository.GetByIdAsync(request.UserProfileId);
+
+            if (userProfileById is null)
             {
-                string sqlQuery = "Proc_GetUserProfileById";
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.Add("@UserProfileId", request.UserProfileId);
-                UserProfile? userProfile = await dbConnection
-                    .QueryFirstOrDefaultAsync<UserProfile>(sqlQuery, param: parameters, commandType: CommandType.StoredProcedure);
-
-                if (userProfile is null) 
-                {
-                    result.AddError(ErrorCode.NotFound, string.Format(UserProfileErrorMessage.UserProfileNotFound, request.UserProfileId));
-                    return result;
-                }
-
-                result.Data = userProfile;
+                result.AddError(ErrorCode.NotFound, string.Format(UserProfileErrorMessage.UserProfileNotFound, request.UserProfileId));
+                return result;
             }
+
+            result.Data = userProfileById;
         }
         catch (Exception ex)
         {
             result.AddError(ErrorCode.InternalServerError, ex.Message);
         }
 
-        return result;  
+        return result;
     }
 }

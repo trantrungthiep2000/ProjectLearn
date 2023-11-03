@@ -1,16 +1,13 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Project.Application.Identities.Commands;
 using Project.Application.Models;
 using Project.Application.Services;
 using Project.Application.Validators;
-using Project.DAL.Data;
 using Project.Domain.Aggregates;
+using Project.Infrastructure.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -22,17 +19,20 @@ namespace Project.Application.Identities.CommandHandlers;
 /// </summary>
 public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult<string>>
 {
-    private readonly DataContext _dataContext;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IdentityService _identityService;
+    private readonly IUserProfileRepository<UserProfile> _userProfileRepository;
 
-    public LoginCommandHandler(DataContext dataContext,
+    public LoginCommandHandler(IUnitOfWork unitOfWork,
         UserManager<IdentityUser> userManager,
-        IdentityService identityService)
+        IdentityService identityService,
+        IUserProfileRepository<UserProfile> userProfileRepository)
     {
-        _dataContext = dataContext;
+        _unitOfWork = unitOfWork;
         _userManager = userManager;
         _identityService = identityService;
+        _userProfileRepository = userProfileRepository;
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
             if (await CheckLoginAccountAsync(request, result)) { return result; }
 
             // Get information of user profile
-            UserProfile userProfile = await GetUserProfileByEmailAsync(request.Email, cancellationToken);
+            UserProfile userProfile = await _userProfileRepository.GetUserProfileByEmail(request.Email, cancellationToken);
 
             if (userProfile == null)
             {
@@ -130,21 +130,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
     }
 
     /// <summary>
-    /// Get user profile by email async
-    /// </summary>
-    /// <param name="email">Email</param>
-    /// <param name="cancellationToken">CancellationToken</param>
-    /// <returns>UserProfile</returns>
-    /// CreatedBy: ThiepTT(01/11/2023)
-    private async Task<UserProfile> GetUserProfileByEmailAsync(string email, CancellationToken cancellationToken)
-    {
-        UserProfile? userProfileById = await _dataContext.UserProfiles
-            .FirstOrDefaultAsync(userProfile => userProfile.Email.Trim().ToLower().Equals(email.Trim().ToLower()), cancellationToken);
-
-        return userProfileById!;
-    }
-
-    /// <summary>
     /// Get jwt token
     /// </summary>
     /// <param name="userProfile">UserProfile</param>
@@ -158,7 +143,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, userProfile.Email),
             new Claim(ClaimTypes.Name, userProfile.FullName),
-            new Claim("UserProfileId", userProfile.UserProfileId.ToString())
+            new Claim($"UserProfileId", userProfile.UserProfileId.ToString())
         };
 
         var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);

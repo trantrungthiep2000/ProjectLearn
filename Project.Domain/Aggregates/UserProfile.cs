@@ -59,14 +59,12 @@ public class UserProfile
     /// Update user profile
     /// </summary>
     /// <param name="fullName">Full name</param>
-    /// <param name="email">Email</param>
     /// <param name="phoneNumber">Phone number</param>
     /// <param name="dateOfBirth">Date of birth</param>
     /// CreatedBy: ThiepTT(30/10/2023)
-    public void UpdateUserProfile(string fullName, string email, string phoneNumber, DateTime dateOfBirth)
+    public void UpdateUserProfile(string fullName, string phoneNumber, DateTime dateOfBirth)
     {
         FullName = fullName;
-        Email = email;
         PhoneNumber = phoneNumber;
         DateOfBirth = dateOfBirth;
     }
