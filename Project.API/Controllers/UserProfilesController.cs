@@ -7,6 +7,7 @@ using Project.API.Extenstions;
 using Project.API.Options;
 using Project.Application.Dtos.Requests;
 using Project.Application.Models;
+using Project.Application.Services.IServices;
 using Project.Application.Users.Commands;
 using Project.Application.Users.Queries;
 using Project.Domain.Aggregates;
@@ -24,11 +25,13 @@ public class UserProfilesController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IResponseCacheService _responseCacheService;
 
-    public UserProfilesController(IMediator mediator, IMapper mapper)
+    public UserProfilesController(IMediator mediator, IMapper mapper, IResponseCacheService responseCacheService)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _responseCacheService = responseCacheService;
     }
 
     /// <summary>
@@ -40,9 +43,52 @@ public class UserProfilesController : BaseController
     [HttpGet]
     [Route($"{ApiRoutes.UserProfile.GetAllUserProfiles}")]
     [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
+    [Cache(ApiRoutes.TimeToLive)]
     public async Task<IActionResult> GetAllUserProfiles(CancellationToken cancellationToken)
     {
         GetAllUserProfilesQuery query = new GetAllUserProfilesQuery();
+
+        OperationResult<IEnumerable<UserProfile>> response = await _mediator.Send(query, cancellationToken);
+
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get all user profiles entity framework
+    /// </summary>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>IActionResult</returns>
+    /// CreatedBy: ThiepTT(06/11/2023)
+    [HttpGet]
+    [Route($"{ApiRoutes.UserProfile.GetAllUserProfilesEF}")]
+    [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
+    [Cache(ApiRoutes.TimeToLive)]
+    public async Task<IActionResult> GetAllUserProfilesEF(CancellationToken cancellationToken)
+    {
+        GetAllUserProfilesEFQuery query = new GetAllUserProfilesEFQuery();
+
+        OperationResult<IEnumerable<UserProfile>> response = await _mediator.Send(query, cancellationToken);
+
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get all user profiles entity framework as no tracking
+    /// </summary>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>IActionResult</returns>
+    /// CreatedBy: ThiepTT(06/11/2023)
+    [HttpGet]
+    [Route($"{ApiRoutes.UserProfile.GetAllUserProfilesEFAsNoTracking}")]
+    [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
+    [Cache(ApiRoutes.TimeToLive)]
+    public async Task<IActionResult> GetAllUserProfilesEFAsNoTracking(CancellationToken cancellationToken)
+    {
+        GetAllUserProfilesEFAsNoTrackingQuery query = new GetAllUserProfilesEFAsNoTrackingQuery();
 
         OperationResult<IEnumerable<UserProfile>> response = await _mediator.Send(query, cancellationToken);
 
@@ -97,6 +143,13 @@ public class UserProfilesController : BaseController
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
+        string pattern = SystemConfig.GeneratePattern(
+            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{ApiRoutes.Api}",
+            $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
+
         return Ok(response);
     }
 
@@ -120,6 +173,13 @@ public class UserProfilesController : BaseController
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        string pattern = SystemConfig.GeneratePattern(
+            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{ApiRoutes.Api}",
+            $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
         return Ok(response);
     }
@@ -165,6 +225,13 @@ public class UserProfilesController : BaseController
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
+        string pattern = SystemConfig.GeneratePattern(
+             ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+             $"{ApiRoutes.Api}",
+             $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
+
         return Ok(response);
     }
 
@@ -185,6 +252,13 @@ public class UserProfilesController : BaseController
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        string pattern = SystemConfig.GeneratePattern(
+            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{ApiRoutes.Api}",
+            $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
         return Ok(response);
     }

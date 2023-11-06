@@ -5,6 +5,7 @@ using Project.API.Options;
 using Project.Application.Dtos.Requests;
 using Project.Application.Identities.Commands;
 using Project.Application.Models;
+using Project.Application.Services.IServices;
 
 namespace Project.API.Controllers;
 
@@ -18,11 +19,13 @@ public class AuthenticationsController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IResponseCacheService _responseCacheService;
 
-    public AuthenticationsController(IMediator mediator, IMapper mapper)
+    public AuthenticationsController(IMediator mediator, IMapper mapper, IResponseCacheService responseCacheService)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _responseCacheService = responseCacheService;
     }
 
     /// <summary>
@@ -41,6 +44,13 @@ public class AuthenticationsController : BaseController
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        string pattern = SystemConfig.GeneratePattern(
+            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{ApiRoutes.Api}",
+            $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
         return Ok(response);
     }

@@ -12,6 +12,16 @@ public static class ApiRoutes
     public const string BaseRoute = "api/v1/[controller]";
 
     /// <summary>
+    /// Api
+    /// </summary>
+    public const string Api = "api/v1";
+
+    /// <summary>
+    /// Time to live
+    /// </summary>
+    public const int TimeToLive = 3600;
+
+    /// <summary>
     /// Information of authentication
     /// CreatedBy: ThiepTT(31/10/2023)
     /// </summary>
@@ -38,6 +48,16 @@ public static class ApiRoutes
         /// Get all user profiles
         /// </summary>
         public const string GetAllUserProfiles = "GetAllUserProfiles";
+
+        /// <summary>
+        /// Get all user profiles entity framework
+        /// </summary>
+        public const string GetAllUserProfilesEF = "GetAllUserProfilesEF";
+
+        /// <summary>
+        /// Get all user profiles entity framework as no tracking
+        /// </summary>
+        public const string GetAllUserProfilesEFAsNoTracking = "GetAllUserProfilesEFAsNoTracking";
 
         /// <summary>
         /// Get user profile by id

@@ -1,4 +1,6 @@
-﻿namespace Project.API.Options;
+﻿using Microsoft.AspNetCore.Routing;
+
+namespace Project.API.Options;
 
 /// <summary>
 /// Information of system config
@@ -40,4 +42,26 @@ public static class SystemConfig
     /// Application/json
     /// </summary>
     public const string ApplicationJson = "application/json";
+
+    /// <summary>
+    /// Controller
+    /// </summary>
+    public const string Controller = "Controller";
+
+    /// <summary>
+    /// Generate pattern
+    /// </summary>
+    /// <param name="controllerName">Name of controller</param>
+    /// <returns>Pattern</returns>
+    /// CreatedBy: ThiepTT(27/10/2023)
+    public static string GeneratePattern(string controllerName, string baseRoute, string action)
+    {
+        if (controllerName.EndsWith($"{Controller}"))
+        {
+            controllerName = controllerName.Substring(0, controllerName.Length - $"{Controller}".Length);
+        }
+        var pattern = $"/{baseRoute}/{controllerName}/{action}";
+
+        return pattern;
+    }
 }

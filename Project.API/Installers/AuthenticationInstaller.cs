@@ -44,9 +44,28 @@ public class AuthenticationInstaller : IWebApplicationBuilderInstaller
                     ValidAudiences = jwtSettings.Audiences,
                     RequireExpirationTime = false,
                     ValidateLifetime = true,
+                    LifetimeValidator = LifetimeValidator,
                 };
                 options.Audience = jwtSettings.Audiences[0];
                 options.ClaimsIssuer = jwtSettings.Issuer;
             });
+    }
+
+    /// <summary>
+    /// Life time validator
+    /// </summary>
+    /// <param name="notBefore">NotBefore</param>
+    /// <param name="expires">Expires</param>
+    /// <param name="token">SecurityToken</param>
+    /// <param name="params">TokenValidationParameters</param>
+    /// <returns>True | False</returns>
+    /// CreatedBy: ThiepTT(06/11/2023)
+    private bool LifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken token, TokenValidationParameters @params)
+    {
+        if (expires != null)
+        {
+            return expires > DateTime.UtcNow;
+        }
+        return false;
     }
 }
