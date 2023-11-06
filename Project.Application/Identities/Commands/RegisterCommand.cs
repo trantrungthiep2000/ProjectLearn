@@ -33,4 +33,9 @@ public class RegisterCommand : IRequest<OperationResult<string>>
     /// Password
     /// </summary>
     public string Password { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Role name
+    /// </summary>
+    public string RoleName { get; set; } = "User";
 }

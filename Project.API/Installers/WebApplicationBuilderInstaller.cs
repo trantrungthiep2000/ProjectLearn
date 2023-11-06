@@ -1,8 +1,5 @@
 ﻿using MediatR;
 using Project.API.Options;
-using Project.Application.Identities.Commands;
-using Project.Application.MappingProfiles;
-using System.Reflection;
 
 namespace Project.API.Installers;
 

@@ -42,7 +42,7 @@ public class DataContext : IdentityDbContext
 
         builder.Entity<IdentityUserLogin<string>>().HasKey(identityUserLogin => identityUserLogin.UserId);
 
-        builder.Entity<IdentityUserRole<string>>().HasKey(identityUserRole => identityUserRole.UserId);
+        builder.Entity<IdentityUserRole<string>>().HasKey(identityUserRole => new { identityUserRole.UserId, identityUserRole.RoleId });
 
         builder.Entity<IdentityUserToken<string>>().HasKey(identityUserToken => identityUserToken.UserId);
     }

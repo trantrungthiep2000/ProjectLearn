@@ -35,6 +35,11 @@ public static class ApiRoutes
     public class UserProfile
     {
         /// <summary>
+        /// Get all user profiles
+        /// </summary>
+        public const string GetAllUserProfiles = "GetAllUserProfiles";
+
+        /// <summary>
         /// Get user profile by id
         /// </summary>
         public const string GetUserProfileById = "GetUserProfileById";
@@ -63,5 +68,21 @@ public static class ApiRoutes
         /// Remove account
         /// </summary>
         public const string RemoveAccount = "RemoveAcount";
+    }
+
+    /// <summary>
+    /// Information of role
+    /// </summary>
+    public class Role
+    {
+        /// <summary>
+        /// Admin
+        /// </summary>
+        public const string Admin = "Admin";
+
+        /// <summary>
+        /// User
+        /// </summary>
+        public const string User = "User";
     }
 }

@@ -11,10 +11,12 @@ namespace Project.API.Middlewares;
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionMiddleware> _logger;
 
-    public ExceptionMiddleware(RequestDelegate next)
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     /// <summary>
@@ -26,7 +28,7 @@ public class ExceptionMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         ErrorResponse errorResponse = new ErrorResponse();
-
+        
         try
         {
             await _next(context);
@@ -57,6 +59,9 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
+            _logger.LogInformation($"\nError: \"{ex}\"\n");
+            File.AppendAllText("log_error.txt", $"\nError: \"{ex}\"\n");
+
             errorResponse.StatusCode = (int)ErrorCode.InternalServerError;
             errorResponse.StatusPhrase = SystemConfig.InternalServerError;
             errorResponse.TimeStamp = DateTime.UtcNow;

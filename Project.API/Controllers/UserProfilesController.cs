@@ -32,6 +32,26 @@ public class UserProfilesController : BaseController
     }
 
     /// <summary>
+    /// Get all user profiles
+    /// </summary>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>IActionResult</returns>
+    /// CreatedBy: ThiepTT(06/11/2023)
+    [HttpGet]
+    [Route($"{ApiRoutes.UserProfile.GetAllUserProfiles}")]
+    [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
+    public async Task<IActionResult> GetAllUserProfiles(CancellationToken cancellationToken)
+    {
+        GetAllUserProfilesQuery query = new GetAllUserProfilesQuery();
+
+        OperationResult<IEnumerable<UserProfile>> response = await _mediator.Send(query, cancellationToken);
+
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Get user profile by id
     /// </summary>
     /// <param name="cancellationToken">CancellationToken</param>
@@ -39,6 +59,7 @@ public class UserProfilesController : BaseController
     /// CreatedBy: ThiepTT(03/11/2023)
     [HttpGet]
     [Route($"{ApiRoutes.UserProfile.GetUserProfileById}")]
+    [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     [ValidateGuid("userProfileId")]
     public async Task<IActionResult> GetUserProfileById(string? userProfileId, CancellationToken cancellationToken)
     {
@@ -63,6 +84,7 @@ public class UserProfilesController : BaseController
     /// CreatedBy: ThiepTT(02/11/2023)
     [HttpPut]
     [Route($"{ApiRoutes.UserProfile.UpdateUserProfileById}")]
+    [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     [ValidateGuid("userProfileId")]
     public async Task<IActionResult> UpdateUserProfileById(string? userProfileId, UserProfileRequest userProfile, CancellationToken cancellationToken)
     {
@@ -87,6 +109,7 @@ public class UserProfilesController : BaseController
     /// CreatedBy: ThiepTT(02/11/2023)
     [HttpDelete]
     [Route($"{ApiRoutes.UserProfile.RemoveUserProfileById}")]
+    [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     [ValidateGuid("userProfileId")]
     public async Task<IActionResult> RemoveUserProfileById(string? userProfileId, CancellationToken cancellationToken)
     {

@@ -23,16 +23,20 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IdentityService _identityService;
     private readonly IUserProfileRepository<UserProfile> _userProfileRepository;
+    private readonly IIdentityUserRepository<IdentityUser> _identityUserRepository;
 
-    public LoginCommandHandler(IUnitOfWork unitOfWork,
+    public LoginCommandHandler(
+        IUnitOfWork unitOfWork,
         UserManager<IdentityUser> userManager,
         IdentityService identityService,
-        IUserProfileRepository<UserProfile> userProfileRepository)
+        IUserProfileRepository<UserProfile> userProfileRepository,
+        IIdentityUserRepository<IdentityUser> identityUserRepository)
     {
         _unitOfWork = unitOfWork;
         _userManager = userManager;
         _identityService = identityService;
         _userProfileRepository = userProfileRepository;
+        _identityUserRepository = identityUserRepository;
     }
 
     /// <summary>
@@ -57,13 +61,17 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
             // Get information of user profile
             UserProfile userProfile = await _userProfileRepository.GetUserProfileByEmail(request.Email, cancellationToken);
 
-            if (userProfile == null)
+            IdentityUser identityUser = await _identityUserRepository.GetUserByEmailAsync(userProfile.Email, cancellationToken);
+
+            if (userProfile is null || identityUser is null)
             {
                 result.AddError(ErrorCode.BadRequest, IdentityErrorMessage.IdentityUserNotExists);
                 return result;
             }
 
-            result.Data = GetJwtToken(userProfile);
+            IEnumerable<string> roles = await _userManager.GetRolesAsync(identityUser);
+
+            result.Data = GetJwtToken(userProfile, roles);
         }
         catch (Exception ex)
         {
@@ -133,9 +141,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
     /// Get jwt token
     /// </summary>
     /// <param name="userProfile">UserProfile</param>
+    /// <param name="roles">IEnumerable<string></param>
     /// <returns>Token</returns>
     /// CreatedBy: ThiepTT(01/11/2023)
-    private string GetJwtToken(UserProfile userProfile)
+    private string GetJwtToken(UserProfile userProfile, IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
@@ -145,6 +154,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
             new Claim(ClaimTypes.Name, userProfile.FullName),
             new Claim($"UserProfileId", userProfile.UserProfileId.ToString())
         };
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
 

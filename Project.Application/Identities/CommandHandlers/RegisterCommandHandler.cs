@@ -21,15 +21,23 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMapper _mapper;
     private readonly IUserProfileRepository<UserProfile> _userProfileRepository;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IIdentityUserRepository<IdentityUser> _identityUserRepository;
 
-    public RegisterCommandHandler(IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager, IMapper mapper,
-        IUserProfileRepository<UserProfile> userProfileRepository)
+    public RegisterCommandHandler(
+        IUnitOfWork unitOfWork,
+        UserManager<IdentityUser> userManager,
+        IMapper mapper,
+        IUserProfileRepository<UserProfile> userProfileRepository,
+        RoleManager<IdentityRole> roleManager,
+        IIdentityUserRepository<IdentityUser> identityUserRepository)
     {
         _unitOfWork = unitOfWork;
         _userManager = userManager;
         _mapper = mapper;
         _userProfileRepository = userProfileRepository;
-
+        _roleManager = roleManager;
+        _identityUserRepository = identityUserRepository;
     }
 
     /// <summary>
@@ -62,6 +70,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
 
             // Create user profile
             CreateUserProfile(userProfile);
+
+            // Check and create role user
+            if (await AssignRoleAsync(userProfile.Email, request.RoleName, result, cancellationToken)) { return result; }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
@@ -163,5 +174,35 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
             userProfile.Email, userProfile.PhoneNumber, userProfile.DateOfBirth);
 
         _userProfileRepository.Create(userProfileCreate);
+    }
+
+    /// <summary>
+    /// Assign role async
+    /// </summary>
+    /// <param name="email">Email of user</param>
+    /// <param name="roleName">Name of role</param>
+    /// <param name="result">OperationResult<string></param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>True || false</returns>
+    /// CreatedBy: ThiepTT(06/11/2023)
+    public async Task<bool> AssignRoleAsync(string email, string roleName, OperationResult<string> result, CancellationToken cancellationToken)
+    {
+        var userByEmail = await _identityUserRepository.GetUserByEmailAsync(email, cancellationToken);
+
+        if (userByEmail is null)
+        {
+            result.AddError(ErrorCode.InternalServerError, IdentityErrorMessage.InternalServerError);
+
+            return true;
+        }
+
+        if (!_roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult())
+        {
+            _roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
+        }
+
+        await _userManager.AddToRoleAsync(userByEmail, roleName);
+
+        return false;
     }
 }

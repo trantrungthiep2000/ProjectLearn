@@ -19,9 +19,9 @@ public class WebApplicationInstaller : IWebApplicationInstaller
 
         app.UseSwaggerUI();
 
-        app.UseHttpsRedirection();
-
         app.UseMiddleware<ExceptionMiddleware>();
+
+        app.UseHttpsRedirection();
 
         app.UseAuthentication();
 

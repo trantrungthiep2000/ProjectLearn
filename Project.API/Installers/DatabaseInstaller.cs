@@ -28,6 +28,7 @@ public class DatabaseInstaller : IWebApplicationBuilderInstaller
             options.Password.RequireUppercase = true;
             options.Password.RequireNonAlphanumeric = true;
         })
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<DataContext>();
     }
 }
