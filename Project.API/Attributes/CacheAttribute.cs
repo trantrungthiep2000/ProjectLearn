@@ -15,6 +15,11 @@ public class CacheAttribute : Attribute, IAsyncActionFilter
 {
     private readonly int _timeToLiveSeconds;
 
+    /// <summary>
+    /// Cache attribute
+    /// </summary>
+    /// <param name="timeToLiveSeconds">Time to live seconds</param>
+    /// CreatedBy: ThiepTT(06/11/2023)
     public CacheAttribute(int timeToLiveSeconds = 1000)
     {
         _timeToLiveSeconds = timeToLiveSeconds;

@@ -13,7 +13,7 @@ public class BaseController : ControllerBase
     /// <summary>
     /// Handler error response
     /// </summary>
-    /// <param name="errors">List<Error></param>
+    /// <param name="errors">List of error</param>
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(31/10/2023)
     protected IActionResult HandlerErrorResponse(List<Error> errors)
@@ -43,7 +43,7 @@ public class BaseController : ControllerBase
     /// Config error response
     /// </summary>
     /// <param name="errorResponse">Error response</param>
-    /// <param name="errors">List<Error></param>
+    /// <param name="errors">List of error</param>
     /// <param name="statusCode">Status code</param>
     /// <param name="statusPhrase">Status phrase</param>
     /// <returns></returns>

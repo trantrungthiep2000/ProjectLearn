@@ -1,4 +1,5 @@
-﻿using Project.API.Middlewares;
+﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Project.API.Middlewares;
 
 namespace Project.API.Installers;
 
@@ -12,12 +13,21 @@ public class WebApplicationInstaller : IWebApplicationInstaller
     /// Installer web application
     /// </summary>
     /// <param name="app">WebApplication</param>
-    /// CreatedBy; ThiepTT(30/10/2023)
+    /// CreatedBy: ThiepTT(30/10/2023)
     public void InstallerWebApplication(WebApplication app)
     {
         app.UseSwagger();
 
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(options =>
+        {
+            IApiVersionDescriptionProvider provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+            foreach (ApiVersionDescription description in provider.ApiVersionDescriptions)
+            {
+                options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Project API {description.ApiVersion}");
+                options.RoutePrefix = string.Empty;
+            }
+        });
 
         app.UseMiddleware<ExceptionMiddleware>();
 

@@ -13,6 +13,12 @@ public class ExceptionMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
 
+    /// <summary>
+    /// Exception middleware
+    /// </summary>
+    /// <param name="next">RequestDelegate</param>
+    /// <param name="logger">ILogger</param>
+    /// CreatedBy: ThiepTT(02/11/2023)
     public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
         _next = next;

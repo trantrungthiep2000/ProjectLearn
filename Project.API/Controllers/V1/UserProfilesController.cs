@@ -12,13 +12,14 @@ using Project.Application.Users.Commands;
 using Project.Application.Users.Queries;
 using Project.Domain.Aggregates;
 
-namespace Project.API.Controllers;
+namespace Project.API.Controllers.V1;
 
 /// <summary>
 /// Information of user profile controller
 /// CreatedBy: ThiepTT(02/11/2023)
 /// </summary>
-[Route($"{ApiRoutes.BaseRoute}")]
+[ApiVersion($"{ApiRoutes.Version.V1}")]
+[Route($"{ApiRoutes.BaseRouter}")]
 [ApiController]
 [Authorize]
 public class UserProfilesController : BaseController
@@ -27,6 +28,13 @@ public class UserProfilesController : BaseController
     private readonly IMapper _mapper;
     private readonly IResponseCacheService _responseCacheService;
 
+    /// <summary>
+    /// User profiles controller
+    /// </summary>
+    /// <param name="mediator">IMediator</param>
+    /// <param name="mapper">IMapper</param>
+    /// <param name="responseCacheService">IResponseCacheService</param>
+    /// CreatedBy: ThiepTT(02/11/2023)
     public UserProfilesController(IMediator mediator, IMapper mapper, IResponseCacheService responseCacheService)
     {
         _mediator = mediator;
@@ -100,6 +108,7 @@ public class UserProfilesController : BaseController
     /// <summary>
     /// Get user profile by id
     /// </summary>
+    /// <param name="userProfileId">Id of user profile</param>
     /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(03/11/2023)

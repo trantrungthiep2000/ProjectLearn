@@ -7,19 +7,53 @@
 public static class ApiRoutes
 {
     /// <summary>
-    /// Base route
+    /// Base router
     /// </summary>
-    public const string BaseRoute = "api/v1/[controller]";
+    public const string BaseRouter = "api/v{version:apiversion}/[controller]";
 
     /// <summary>
     /// Api
     /// </summary>
-    public const string Api = "api/v1";
+    public const string Api = "api";
 
     /// <summary>
     /// Time to live
     /// </summary>
     public const int TimeToLive = 3600;
+
+    /// <summary>
+    /// Information of version
+    /// CreatedBy: ThiepTT(07/11/2023)
+    /// </summary>
+    public class Version
+    {
+        /// <summary>
+        /// V1
+        /// </summary>
+        public const string V1 = "1.0";
+
+        /// <summary>
+        /// V2
+        /// </summary>
+        public const string V2 = "2.0";
+    }
+
+    /// <summary>
+    /// Information of role
+    /// CreatedBy: ThiepTT(02/11/2023)
+    /// </summary>
+    public class Role
+    {
+        /// <summary>
+        /// Admin
+        /// </summary>
+        public const string Admin = "Admin";
+
+        /// <summary>
+        /// User
+        /// </summary>
+        public const string User = "User";
+    }
 
     /// <summary>
     /// Information of authentication
@@ -91,18 +125,14 @@ public static class ApiRoutes
     }
 
     /// <summary>
-    /// Information of role
+    /// Information of test
+    /// CreatedBy: ThiepTT(07/11/2023)
     /// </summary>
-    public class Role
+    public class Test
     {
         /// <summary>
-        /// Admin
+        /// Test v2
         /// </summary>
-        public const string Admin = "Admin";
-
-        /// <summary>
-        /// User
-        /// </summary>
-        public const string User = "User";
+        public const string TestV2 = "TestV2";
     }
 }

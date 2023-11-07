@@ -13,6 +13,11 @@ public class ValidateGuidAttribute : Attribute, IAsyncActionFilter
 {
     private readonly List<string> _keys;
 
+    /// <summary>
+    /// Validate guid attribute
+    /// </summary>
+    /// <param name="key">Key</param>
+    /// CreatedBy: ThiepTT(03/11/2023)
     public ValidateGuidAttribute(string key)
     {
         _keys = new List<string>();

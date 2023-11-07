@@ -7,13 +7,14 @@ using Project.Application.Identities.Commands;
 using Project.Application.Models;
 using Project.Application.Services.IServices;
 
-namespace Project.API.Controllers;
+namespace Project.API.Controllers.V1;
 
 /// <summary>
 /// Information of authentication controller
 /// CreatedBy: ThiepTT(31/10/2023)
 /// </summary>
-[Route($"{ApiRoutes.BaseRoute}")]
+[ApiVersion($"{ApiRoutes.Version.V1}")]
+[Route($"{ApiRoutes.BaseRouter}")]
 [ApiController]
 public class AuthenticationsController : BaseController
 {
@@ -21,6 +22,13 @@ public class AuthenticationsController : BaseController
     private readonly IMapper _mapper;
     private readonly IResponseCacheService _responseCacheService;
 
+    /// <summary>
+    /// Authentications controller
+    /// </summary>
+    /// <param name="mediator">IMediator</param>
+    /// <param name="mapper">IMapper</param>
+    /// <param name="responseCacheService">IResponseCacheService</param>
+    /// CreatedBy: ThiepTT(31/10/2023)
     public AuthenticationsController(IMediator mediator, IMapper mapper, IResponseCacheService responseCacheService)
     {
         _mediator = mediator;

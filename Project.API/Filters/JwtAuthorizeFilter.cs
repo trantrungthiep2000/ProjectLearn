@@ -10,8 +10,16 @@ namespace Project.API.Filters;
 /// </summary>
 public class JwtAuthorizeFilter : IAuthorizationFilter
 {
+    /// <summary>
+    /// Role name
+    /// </summary>
     public string RoleName { get; set; }
 
+    /// <summary>
+    /// Json web token authorize filter
+    /// </summary>
+    /// <param name="roleName">Role name</param>
+    /// CreatedBy: ThiepTT(06/11/2023)
     public JwtAuthorizeFilter(string roleName)
     {
         RoleName = roleName;

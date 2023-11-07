@@ -49,9 +49,21 @@ public static class SystemConfig
     public const string Controller = "Controller";
 
     /// <summary>
+    /// Title
+    /// </summary>
+    public const string Title = "Project";
+
+    /// <summary>
+    /// Description
+    /// </summary>
+    public const string Description = "This API version has been deprecated";
+
+    /// <summary>
     /// Generate pattern
     /// </summary>
     /// <param name="controllerName">Name of controller</param>
+    /// <param name="baseRoute">Base route</param>
+    /// <param name="action">Action</param>
     /// <returns>Pattern</returns>
     /// CreatedBy: ThiepTT(27/10/2023)
     public static string GeneratePattern(string controllerName, string baseRoute, string action)

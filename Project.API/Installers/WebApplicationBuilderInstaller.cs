@@ -1,5 +1,8 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Project.API.Options;
+using System.Reflection;
 
 namespace Project.API.Installers;
 
@@ -18,9 +21,27 @@ public class WebApplicationBuilderInstaller : IWebApplicationBuilderInstaller
     {
         builder.Services.AddControllers();
 
+        builder.Services.AddApiVersioning(config =>
+        {
+            config.DefaultApiVersion = new ApiVersion(1, 0);
+            config.AssumeDefaultVersionWhenUnspecified = true;
+            config.ReportApiVersions = true;
+            config.ApiVersionReader = new UrlSegmentApiVersionReader();
+        });
+
+        builder.Services.AddVersionedApiExplorer(config =>
+        {
+            config.GroupNameFormat = "'v'VVV";
+            config.SubstituteApiVersionInUrl = true;
+        });
+
         builder.Services.AddEndpointsApiExplorer();
 
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            string xmlFile = Path.ChangeExtension(Assembly.GetEntryAssembly()!.Location, ".xml");
+            options.IncludeXmlComments(xmlFile);
+        });
 
         builder.Services.ConfigureOptions<ConfigSwagger>();
 
