@@ -96,17 +96,17 @@ public static class ApiRoutes
         /// <summary>
         /// Get user profile by id
         /// </summary>
-        public const string GetUserProfileById = "GetUserProfileById";
+        public const string GetUserProfileById = "GetUserProfileById/{userProfileId}";
 
         /// <summary>
         /// Update user profile by id
         /// </summary>
-        public const string UpdateUserProfileById = "UpdateUserProfileById";
+        public const string UpdateUserProfileById = "UpdateUserProfileById/{userProfileId}";
 
         /// <summary>
         /// Remove user profile by id
         /// </summary>
-        public const string RemoveUserProfileById = "RemoveUserProfileById";
+        public const string RemoveUserProfileById = "RemoveUserProfileById/{userProfileId}";
 
         /// <summary>
         /// Get information of user profile
@@ -134,5 +134,22 @@ public static class ApiRoutes
         /// Test v2
         /// </summary>
         public const string TestV2 = "TestV2";
+    }
+
+    /// <summary>
+    /// Information of product
+    /// CreatedBy: ThiepTT(07/11/2023)
+    /// </summary>
+    public class Product
+    {
+        /// <summary>
+        /// Get all products
+        /// </summary>
+        public const string GetAllProducts = "GetAllProducts";
+
+        /// <summary>
+        /// Get product by id
+        /// </summary>
+        public const string GetProductById = "GetProductById/{productId}";
     }
 }

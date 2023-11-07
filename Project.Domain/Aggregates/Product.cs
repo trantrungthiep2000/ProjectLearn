@@ -6,8 +6,7 @@
 /// </summary>
 public class Product : BaseEntity
 {
-    public Product()
-    { }
+    public Product() { }
 
     /// <summary>
     /// Id of product

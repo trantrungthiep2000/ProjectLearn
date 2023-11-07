@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage;
+using Project.Application.Messages;
 using Project.Application.Models;
 using Project.Application.Users.Commands;
 using Project.Domain.Aggregates;
@@ -45,15 +46,15 @@ public class RemoveAccountCommandHandler : IRequestHandler<RemoveAccountCommand,
 
             if (userProfileById is null)
             {
-                result.AddError(ErrorCode.NotFound, string.Format(UserProfileErrorMessage.UserProfileNotFound, request.UserProfileId));
+                result.AddError(ErrorCode.NotFound, string.Format(ErrorMessage.UserProfile.UserProfileNotFound, request.UserProfileId));
                 return result;
             }
 
-            IdentityUser identityUser = await _identityUserRepository.GetUserByEmailAsync(userProfileById.Email, cancellationToken);
+            IdentityUser identityUser = await _identityUserRepository.GetUserByEmailAsync(userProfileById.Email);
 
             if (identityUser is null)
             {
-                result.AddError(ErrorCode.NotFound, string.Format(UserProfileErrorMessage.UserProfileByEmailNotFound, userProfileById.Email));
+                result.AddError(ErrorCode.NotFound, string.Format(ErrorMessage.UserProfile.UserProfileByEmailNotFound, userProfileById.Email));
                 return result;
             }
 
@@ -63,7 +64,7 @@ public class RemoveAccountCommandHandler : IRequestHandler<RemoveAccountCommand,
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            result.Data = UserProfileResponseMessage.RemoveAccountSuccess;
+            result.Data = ResponseMessage.UserProfile.RemoveAccountSuccess;
         }
         catch (Exception ex)
         {

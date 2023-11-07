@@ -26,5 +26,7 @@ public class DependencyInjectionInstaller : IWebApplicationBuilderInstaller
         builder.Services.AddScoped<IIdentityUserRepository<IdentityUser>, IdentityUserRepository>();
 
         builder.Services.AddScoped<IUserProfileRepository<UserProfile>, UserProfileRepository>();
+
+        builder.Services.AddScoped<IProductRepository<Product>, ProductRepository>();
     }
 }

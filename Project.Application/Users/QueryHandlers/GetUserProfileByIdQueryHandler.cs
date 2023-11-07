@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Project.Application.Messages;
 using Project.Application.Models;
 using Project.Application.Users.Queries;
 using Project.Domain.Aggregates;
@@ -36,7 +37,7 @@ public class GetUserProfileByIdQueryHandler : IRequestHandler<GetUserProfileById
 
             if (userProfileById is null)
             {
-                result.AddError(ErrorCode.NotFound, string.Format(UserProfileErrorMessage.UserProfileNotFound, request.UserProfileId));
+                result.AddError(ErrorCode.NotFound, string.Format(ErrorMessage.UserProfile.UserProfileNotFound, request.UserProfileId));
                 return result;
             }
 

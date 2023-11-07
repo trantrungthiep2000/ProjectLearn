@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Project.Application.Identities.Commands;
+using Project.Application.Messages;
 using Project.Application.Models;
 using Project.Application.Services;
 using Project.Application.Validators;
@@ -59,13 +60,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
             if (await CheckLoginAccountAsync(request, result)) { return result; }
 
             // Get information of user profile
-            UserProfile userProfile = await _userProfileRepository.GetUserProfileByEmail(request.Email, cancellationToken);
+            UserProfile userProfile = await _userProfileRepository.GetUserProfileByEmail(request.Email);
 
-            IdentityUser identityUser = await _identityUserRepository.GetUserByEmailAsync(userProfile.Email, cancellationToken);
+            IdentityUser identityUser = await _identityUserRepository.GetUserByEmailAsync(userProfile.Email);
 
             if (userProfile is null || identityUser is null)
             {
-                result.AddError(ErrorCode.BadRequest, IdentityErrorMessage.IdentityUserNotExists);
+                result.AddError(ErrorCode.BadRequest, ErrorMessage.Identity.IdentityUserNotExists);
                 return result;
             }
 
@@ -124,13 +125,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
 
             if (!validPassword)
             {
-                result.AddError(ErrorCode.BadRequest, IdentityErrorMessage.IdentityUserIncorrectPassword);
+                result.AddError(ErrorCode.BadRequest, ErrorMessage.Identity.IdentityUserIncorrectPassword);
                 return true;
             }
         }
         else
         {
-            result.AddError(ErrorCode.BadRequest, IdentityErrorMessage.IdentityUserIncorrectPassword);
+            result.AddError(ErrorCode.BadRequest, ErrorMessage.Identity.IdentityUserIncorrectPassword);
             return true;
         }
 

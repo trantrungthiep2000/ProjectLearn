@@ -11,8 +11,7 @@ public interface IIdentityUserRepository<E> : IBaseRepository<E> where E : class
     /// Get user by email
     /// </summary>
     /// <param name="email">Email</param>
-    /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>Information of entity</returns>
     /// CreatedBy: ThiepTT(03/11/2023)
-    public Task<E> GetUserByEmailAsync(string email, CancellationToken cancellationToken);
+    public Task<E> GetUserByEmailAsync(string email);
 }

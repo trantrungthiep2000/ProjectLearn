@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Dapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project.DAL.Data;
+using Project.Domain.Aggregates;
 using Project.Infrastructure.Interfaces;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace Project.Infrastructure.Repositories;
 
@@ -17,14 +21,21 @@ public class IdentityUserRepository : BaseRepository<IdentityUser>, IIdentityUse
     /// Get user by email async
     /// </summary>
     /// <param name="email">Email</param>
-    /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>Information of user</returns>
     /// CreatedBy: ThiepTT(03/11/2023)
-    public async Task<IdentityUser> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
+    public async Task<IdentityUser> GetUserByEmailAsync(string email)
     {
-        IdentityUser? identityUser = await _dataContext.Users
-            .FirstOrDefaultAsync(user => user.Email!.Trim().ToLower().Equals(email.Trim().ToLower()), cancellationToken);
+        using (IDbConnection dbConnection = new SqlConnection(_dataContext.Database.GetConnectionString()))
+        {
+            string sqlQuery = $"Proc_GetUserByEmail";
 
-        return identityUser!;
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@Email", email);
+
+            IdentityUser? ideityUser = await dbConnection
+                .QueryFirstOrDefaultAsync<IdentityUser>(sqlQuery, param: parameters, commandType: CommandType.StoredProcedure);
+
+            return ideityUser!;
+        }
     }
 }

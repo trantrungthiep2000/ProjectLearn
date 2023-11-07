@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage;
 using Project.Application.Identities.Commands;
+using Project.Application.Messages;
 using Project.Application.Models;
 using Project.Application.Validators;
 using Project.Domain.Aggregates;
@@ -72,12 +73,12 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
             CreateUserProfile(userProfile);
 
             // Check and create role user
-            if (await AssignRoleAsync(userProfile.Email, request.RoleName, result, cancellationToken)) { return result; }
+            if (await AssignRoleAsync(userProfile.Email, request.RoleName, result)) { return result; }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            result.Data = IdentityResponseMessage.RegisterSuccess;
+            result.Data = ResponseMessage.Identity.RegisterSuccess;
         }
         catch (Exception ex)
         {
@@ -127,7 +128,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
 
         if (identityUser is not null)
         {
-            result.AddError(ErrorCode.NotFound, IdentityErrorMessage.IdentityUserAlreadyExists);
+            result.AddError(ErrorCode.NotFound, ErrorMessage.Identity.IdentityUserAlreadyExists);
 
             return true;
         }
@@ -182,16 +183,15 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
     /// <param name="email">Email of user</param>
     /// <param name="roleName">Name of role</param>
     /// <param name="result">OperationResult<string></param>
-    /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>True || false</returns>
     /// CreatedBy: ThiepTT(06/11/2023)
-    public async Task<bool> AssignRoleAsync(string email, string roleName, OperationResult<string> result, CancellationToken cancellationToken)
+    public async Task<bool> AssignRoleAsync(string email, string roleName, OperationResult<string> result)
     {
-        var userByEmail = await _identityUserRepository.GetUserByEmailAsync(email, cancellationToken);
+        var userByEmail = await _identityUserRepository.GetUserByEmailAsync(email);
 
         if (userByEmail is null)
         {
-            result.AddError(ErrorCode.InternalServerError, IdentityErrorMessage.InternalServerError);
+            result.AddError(ErrorCode.InternalServerError, ErrorMessage.Identity.InternalServerError);
 
             return true;
         }

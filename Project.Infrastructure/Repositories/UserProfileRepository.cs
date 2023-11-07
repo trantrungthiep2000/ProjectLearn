@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Project.DAL.Data;
 using Project.Domain.Aggregates;
 using Project.Infrastructure.Interfaces;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace Project.Infrastructure.Repositories;
 
@@ -19,14 +22,21 @@ public class UserProfileRepository : BaseRepository<UserProfile>, IUserProfileRe
     /// Get user profile by email
     /// </summary>
     /// <param name="email">Email</param>
-    /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>Information of entity</returns>
     /// CreatedBy: ThiepTT(03/11/2023)
-    public async Task<UserProfile> GetUserProfileByEmail(string email, CancellationToken cancellationToken)
+    public async Task<UserProfile> GetUserProfileByEmail(string email)
     {
-        UserProfile? userProfile = await _dataContext.UserProfiles
-            .FirstOrDefaultAsync(user => user.Email!.Trim().ToLower().Equals(email.Trim().ToLower()), cancellationToken);
+        using (IDbConnection dbConnection = new SqlConnection(_dataContext.Database.GetConnectionString()))
+        {
+            string sqlQuery = $"Proc_GetUserProfileByEmail";
 
-        return userProfile!;
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@Email", email);
+
+            UserProfile? userProfile = await dbConnection
+                .QueryFirstOrDefaultAsync<UserProfile>(sqlQuery, param: parameters, commandType: CommandType.StoredProcedure);
+
+            return userProfile!;
+        }
     }
 }

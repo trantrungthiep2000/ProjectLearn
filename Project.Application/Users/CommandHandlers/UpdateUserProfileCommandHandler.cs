@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore.Storage;
+using Project.Application.Messages;
 using Project.Application.Models;
 using Project.Application.Users.Commands;
 using Project.Application.Validators;
@@ -52,7 +53,7 @@ public class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfile
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            result.Data = UserProfileResponseMessage.UpdateAccountSuccess;
+            result.Data = ResponseMessage.UserProfile.UpdateAccountSuccess;
         }
         catch (Exception ex)
         {
@@ -76,7 +77,7 @@ public class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfile
 
         if (userProfileById is null)
         {
-            result.AddError(ErrorCode.NotFound, string.Format(UserProfileErrorMessage.UserProfileNotFound, userProfileId));
+            result.AddError(ErrorCode.NotFound, string.Format(ErrorMessage.UserProfile.UserProfileNotFound, userProfileId));
         }
 
         return userProfileById!;

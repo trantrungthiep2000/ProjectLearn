@@ -14,9 +14,8 @@ public class IdentityMapping : Profile
 {
     public IdentityMapping()
     {
-        CreateMap<UserProfile, RegisterCommand>().ReverseMap();
+        CreateMap<RegisterCommand, UserProfile>().ReverseMap();
         CreateMap<RegisterCommand, RegisterRequest>().ReverseMap();
         CreateMap<LoginCommand, LoginRequest>().ReverseMap();
-        CreateMap<UpdateUserProfileCommand, UserProfileRequest>().ReverseMap();
     }
 }
