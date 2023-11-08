@@ -152,7 +152,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, OperationResult
             new Claim(JwtRegisteredClaimNames.Sub, userProfile.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, userProfile.Email),
-            new Claim(ClaimTypes.Name, userProfile.FullName),
+            new Claim($"FullName", userProfile.FullName),
             new Claim($"UserProfileId", userProfile.UserProfileId.ToString())
         };
 

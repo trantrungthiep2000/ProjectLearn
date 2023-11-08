@@ -59,7 +59,7 @@ public class IdentityService
         return new SecurityTokenDescriptor()
         {
             Subject = identity,
-            Expires = DateTime.UtcNow.AddMinutes(5),
+            Expires = DateTime.UtcNow.AddHours(2),
             Audience = _jwtSettings.Audiences[0],
             Issuer = _jwtSettings.Issuer,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_key),

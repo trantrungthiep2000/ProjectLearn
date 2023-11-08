@@ -16,6 +16,8 @@ public class WebApplicationInstaller : IWebApplicationInstaller
     /// CreatedBy: ThiepTT(30/10/2023)
     public void InstallerWebApplication(WebApplication app)
     {
+        app.UseMiddleware<ExceptionMiddleware>();
+
         app.UseSwagger();
 
         app.UseSwaggerUI(options =>
@@ -24,12 +26,10 @@ public class WebApplicationInstaller : IWebApplicationInstaller
 
             foreach (ApiVersionDescription description in provider.ApiVersionDescriptions)
             {
-                options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Project API {description.ApiVersion}");
+                options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Project {description.ApiVersion}");
                 options.RoutePrefix = string.Empty;
             }
         });
-
-        app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseHttpsRedirection();
 

@@ -3,10 +3,14 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.API.Attributes;
+using Project.API.Extenstions;
 using Project.API.Options;
+using Project.Application.Dtos.Requests;
 using Project.Application.Dtos.Responses;
 using Project.Application.Models;
+using Project.Application.Products.Commands;
 using Project.Application.Products.Queries;
+using Project.Application.Services.IServices;
 
 namespace Project.API.Controllers.V1;
 
@@ -22,17 +26,20 @@ public class ProductsController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IResponseCacheService _responseCacheService;
 
     /// <summary>
     /// Products controller
     /// </summary>
     /// <param name="mediator">IMediator</param>
     /// <param name="mapper">IMapper</param>
+    /// <param name="responseCacheService">IResponseCacheService</param>
     /// CreatedBy: ThiepTT(07/11/2023)
-    public ProductsController(IMediator mediator, IMapper mapper)
+    public ProductsController(IMediator mediator, IMapper mapper, IResponseCacheService responseCacheService)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _responseCacheService = responseCacheService;
     }
 
     /// <summary>
@@ -57,7 +64,7 @@ public class ProductsController : BaseController
     }
 
     /// <summary>
-    /// Get all products
+    /// Get product by id
     /// </summary>
     /// <param name="productId">Id of product</param>
     /// <param name="cancellationToken">CancellationToken</param>
@@ -72,10 +79,105 @@ public class ProductsController : BaseController
 
         GetProductByIdQuery query = new GetProductByIdQuery() { ProductId = id };
 
-        OperationResult<IEnumerable<ProductResponse>> response = _mapper
-            .Map<OperationResult<IEnumerable<ProductResponse>>>(await _mediator.Send(query, cancellationToken));
+        OperationResult<ProductResponse> response = _mapper
+            .Map<OperationResult<ProductResponse>>(await _mediator.Send(query, cancellationToken));
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Create product
+    /// </summary>
+    /// <param name="product">ProductRequest</param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>IActionResult</returns>
+    /// CreatedBy: ThiepTT(08/11/2023)
+    [HttpPost]
+    [Route($"{ApiRoutes.Product.CreateProduct}")]
+    public async Task<IActionResult> CreateProduct(ProductRequest product, CancellationToken cancellationToken)
+    {
+        string fullName = HttpContext.GetFullName();
+
+        CreateProductCommand command = _mapper.Map<CreateProductCommand>(product);
+        command.CreatedBy = fullName;
+
+        OperationResult<string> response = await _mediator.Send(command, cancellationToken);
+
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        string pattern = SystemConfig.GeneratePattern(
+            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{ApiRoutes.Api}",
+            $"{ApiRoutes.Product.GetAllProducts}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Update product
+    /// </summary>
+    /// <param name="productId">Id of product</param>
+    /// <param name="product">ProductRequest</param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>IActionResult</returns>
+    /// CreatedBy: ThiepTT(08/11/2023)
+    [HttpPut]
+    [Route($"{ApiRoutes.Product.UpdateProduct}")]
+    [ValidateGuid("productId")]
+    public async Task<IActionResult> UpdateProduct(string? productId, ProductRequest product, CancellationToken cancellationToken)
+    {
+        Guid.TryParse(productId, out Guid id);
+
+        string fullName = HttpContext.GetFullName();
+
+        UpdateProductCommand command = _mapper.Map<UpdateProductCommand>(product);
+        command.ProductId = id;
+        command.UpdatedBy = fullName;
+
+        OperationResult<string> response = await _mediator.Send(command, cancellationToken);
+
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        string pattern = SystemConfig.GeneratePattern(
+           ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+           $"{ApiRoutes.Api}",
+           $"{ApiRoutes.Product.GetAllProducts}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Delete product
+    /// </summary>
+    /// <param name="productId">Id of product</param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>IActionResult</returns>
+    /// CreatedBy: ThiepTT(08/11/2023)
+    [HttpDelete]
+    [Route($"{ApiRoutes.Product.DeleteProduct}")]
+    [ValidateGuid("productId")]
+    public async Task<IActionResult> DeleteProduct(string? productId, CancellationToken cancellationToken)
+    {
+        Guid.TryParse(productId, out Guid id);
+
+        DeleteProductCommand command = new DeleteProductCommand() { ProductId = id };
+
+        OperationResult<string> response = await _mediator.Send(command, cancellationToken);
+
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        string pattern = SystemConfig.GeneratePattern(
+           ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+           $"{ApiRoutes.Api}",
+           $"{ApiRoutes.Product.GetAllProducts}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
         return Ok(response);
     }

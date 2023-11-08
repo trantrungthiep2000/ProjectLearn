@@ -14,7 +14,7 @@ public static class ApiRoutes
     /// <summary>
     /// Api
     /// </summary>
-    public const string Api = "api";
+    public const string Api = "api/v1";
 
     /// <summary>
     /// Time to live
@@ -151,5 +151,20 @@ public static class ApiRoutes
         /// Get product by id
         /// </summary>
         public const string GetProductById = "GetProductById/{productId}";
+
+        /// <summary>
+        /// Create product
+        /// </summary>
+        public const string CreateProduct = "CreateProduct";
+
+        /// <summary>
+        /// Update product
+        /// </summary>
+        public const string UpdateProduct = "UpdateProduct/{productId}";
+
+        /// <summary>
+        /// Delete product
+        /// </summary>
+        public const string DeleteProduct = "DeleteProduct/{productId}";
     }
 }

@@ -39,6 +39,11 @@ public static class SystemConfig
     public const string UserProfileId = "UserProfileId";
 
     /// <summary>
+    /// Full name
+    /// </summary>
+    public const string FullName = "FullName";
+
+    /// <summary>
     /// Application/json
     /// </summary>
     public const string ApplicationJson = "application/json";

@@ -34,4 +34,26 @@ public class ResponseMessage
         /// </summary>
         public const string UpdateAccountSuccess = "Update account success";
     }
+
+    /// <summary>
+    /// Information of product
+    /// CreatedBy: ThiepTT(08/11/2023)
+    /// </summary>
+    public class Product
+    {
+        /// <summary>
+        /// Create product success
+        /// </summary>
+        public const string CreateProductSuccess = "Create product success";
+
+        /// <summary>
+        /// Update product success
+        /// </summary>
+        public const string UpdateProductSuccess = "Update product success";
+
+        /// <summary>
+        /// Delete product success
+        /// </summary>
+        public const string DeleteProductSuccess = "Delete product success";
+    }
 }

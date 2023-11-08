@@ -9,8 +9,6 @@
   <ItemGroup>
     <Folder Include="Identities\QueryHandlers\" />
     <Folder Include="Identities\Queries\" />
-    <Folder Include="Products\Commands\" />
-    <Folder Include="Products\CommandHandlers\" />
   </ItemGroup>
 
   <ItemGroup>

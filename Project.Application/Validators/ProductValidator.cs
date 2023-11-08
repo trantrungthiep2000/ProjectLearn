@@ -20,5 +20,9 @@ public class ProductValidator : AbstractValidator<Product>
         RuleFor(product => product.Price)
             .NotNull().WithMessage("Price cannot be empty")
             .NotEmpty().WithMessage("Price cannot be empty");
+
+        RuleFor(product => product.Description)
+          .NotNull().WithMessage("Description cannot be empty")
+          .NotEmpty().WithMessage("Description cannot be empty");
     }
 }

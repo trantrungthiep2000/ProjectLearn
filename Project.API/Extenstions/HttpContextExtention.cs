@@ -21,6 +21,17 @@ public static class HttpContextExtention
     }
 
     /// <summary>
+    /// Get full name 
+    /// </summary>
+    /// <param name="context">HttpContext</param>
+    /// <returns>Full name</returns>
+    /// CreatedBy: ThiepTT(08/11/2023)
+    public static string GetFullName(this HttpContext context)
+    {
+        return GetDataClaimValue($"{SystemConfig.FullName}", context).ToString();
+    }
+
+    /// <summary>
     /// Get data claim value
     /// </summary>
     /// <param name="key">Key</param>

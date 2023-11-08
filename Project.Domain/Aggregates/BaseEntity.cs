@@ -38,7 +38,7 @@ public class BaseEntity
         CreatedBy = createdBy;
         CreatedDate = DateTime.UtcNow;
         UpdatedBy = string.Empty;
-        UpdatedDate = DateTime.UtcNow;
+        UpdatedDate = CreatedDate;
     }
 
     /// <summary>

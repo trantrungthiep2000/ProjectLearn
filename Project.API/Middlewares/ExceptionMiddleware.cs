@@ -33,34 +33,18 @@ public class ExceptionMiddleware
     /// CreatedBy: ThiepTT(02/11/2023)
     public async Task InvokeAsync(HttpContext context)
     {
-        ErrorResponse errorResponse = new ErrorResponse();
-        
         try
         {
             await _next(context);
 
             if (context.Response.StatusCode == (int)ErrorCode.Unauthorized)
             {
-                errorResponse.StatusCode = (int)ErrorCode.Unauthorized;
-                errorResponse.StatusPhrase = SystemConfig.Unauthorized;
-                errorResponse.TimeStamp = DateTime.UtcNow;
-                errorResponse.Errors.Add(SystemConfig.Unauthorized);
-                context.Response.ContentType = $"{SystemConfig.ApplicationJson}";
-                context.Response.StatusCode = (int)ErrorCode.Unauthorized;
-
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(errorResponse));
+                await HandleExceptionAsync(context, SystemConfig.Unauthorized, (int)ErrorCode.Unauthorized, SystemConfig.Unauthorized);
             }
 
             if (context.Response.StatusCode == (int)ErrorCode.Forbidden)
             {
-                errorResponse.StatusCode = (int)ErrorCode.Forbidden;
-                errorResponse.StatusPhrase = SystemConfig.Forbidden;
-                errorResponse.TimeStamp = DateTime.UtcNow;
-                errorResponse.Errors.Add(SystemConfig.Forbidden);
-                context.Response.ContentType = $"{SystemConfig.ApplicationJson}";
-                context.Response.StatusCode = (int)ErrorCode.Forbidden;
-
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(errorResponse));
+                await HandleExceptionAsync(context, SystemConfig.Forbidden, (int)ErrorCode.Forbidden, SystemConfig.Forbidden);
             }
         }
         catch (Exception ex)
@@ -68,14 +52,30 @@ public class ExceptionMiddleware
             _logger.LogInformation($"\nError: \"{ex}\"\n");
             File.AppendAllText("log_error.txt", $"\nError: \"{ex}\"\n");
 
-            errorResponse.StatusCode = (int)ErrorCode.InternalServerError;
-            errorResponse.StatusPhrase = SystemConfig.InternalServerError;
-            errorResponse.TimeStamp = DateTime.UtcNow;
-            errorResponse.Errors.Add(ex.Message);
-            context.Response.ContentType = $"{SystemConfig.ApplicationJson}";
-            context.Response.StatusCode = (int)ErrorCode.InternalServerError;
-
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(errorResponse));
+            await HandleExceptionAsync(context, ex.Message, (int)ErrorCode.InternalServerError, SystemConfig.InternalServerError);
         }
+    }
+
+    /// <summary>
+    /// Handle exception async
+    /// </summary>
+    /// <param name="context">HttpContext</param>
+    /// <param name="errorMessage">Error message</param>
+    /// <param name="statusCode">Status code</param>
+    /// <param name="statusPhrase">Status phrase</param>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(08/11/2023)
+    private async Task HandleExceptionAsync(HttpContext context, string errorMessage, int statusCode, string statusPhrase)
+    {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.StatusCode = statusCode;
+        errorResponse.StatusPhrase = statusPhrase;
+        errorResponse.TimeStamp = DateTime.UtcNow;
+        errorResponse.Errors.Add(errorMessage);
+
+        context.Response.ContentType = $"{SystemConfig.ApplicationJson}";
+        context.Response.StatusCode = statusCode;
+
+        await context.Response.WriteAsync(JsonConvert.SerializeObject(errorResponse));
     }
 }

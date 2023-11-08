@@ -4,7 +4,6 @@ using Project.Application.Models;
 using Project.Application.Products.Queries;
 using Project.Domain.Aggregates;
 using Project.Infrastructure.Interfaces;
-using Project.Infrastructure.Repositories;
 
 namespace Project.Application.Products.QueryHandlers;
 
