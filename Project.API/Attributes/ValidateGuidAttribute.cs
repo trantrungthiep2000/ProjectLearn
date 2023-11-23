@@ -25,6 +25,17 @@ public class ValidateGuidAttribute : Attribute, IAsyncActionFilter
     }
 
     /// <summary>
+    /// Validate guid attribute
+    /// </summary>
+    /// <param name="keys">List of key</param>
+    /// CreatedBy: ThiepTT(03/11/2023)
+    public ValidateGuidAttribute(List<string> keys)
+    {
+        _keys = new List<string>();
+        _keys = keys;
+    }
+
+    /// <summary>
     /// On action execution async
     /// </summary>
     /// <param name="context">ActionExecutingContext</param>

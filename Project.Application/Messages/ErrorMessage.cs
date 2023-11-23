@@ -7,6 +7,11 @@
 public static class ErrorMessage
 {
     /// <summary>
+    /// File empty
+    /// </summary>
+    public const string FileEmpty = "File is empty";
+
+    /// <summary>
     /// Information of identity
     /// CreatedBy: ThiepTT(07/11/2023)
     /// </summary>
@@ -60,5 +65,10 @@ public static class ErrorMessage
         /// Product not found
         /// </summary>
         public const string ProductNotFound = "No find Product with ID {0}";
+
+        /// <summary>
+        /// Product not empty
+        /// </summary>
+        public const string ProductNotEmpty = "Product is not empty";
     }
 }

@@ -153,6 +153,11 @@ public static class ApiRoutes
         public const string GetProductById = "GetProductById/{productId}";
 
         /// <summary>
+        /// Create bulk product
+        /// </summary>
+        public const string CreateBulkProduct = "CreateBulkProduct";
+
+        /// <summary>
         /// Create product
         /// </summary>
         public const string CreateProduct = "CreateProduct";
@@ -161,6 +166,11 @@ public static class ApiRoutes
         /// Update product
         /// </summary>
         public const string UpdateProduct = "UpdateProduct/{productId}";
+
+        /// <summary>
+        /// Delete bulk product
+        /// </summary>
+        public const string DeleteBulkProduct = "DeleteBulkProduct";
 
         /// <summary>
         /// Delete product

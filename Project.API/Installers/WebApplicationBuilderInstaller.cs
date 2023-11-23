@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using OfficeOpenXml;
 using Project.API.Options;
 using System.Reflection;
 
@@ -48,5 +49,7 @@ public class WebApplicationBuilderInstaller : IWebApplicationBuilderInstaller
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
+
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
     }
 }

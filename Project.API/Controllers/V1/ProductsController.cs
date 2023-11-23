@@ -11,6 +11,7 @@ using Project.Application.Models;
 using Project.Application.Products.Commands;
 using Project.Application.Products.Queries;
 using Project.Application.Services.IServices;
+using Project.Domain.Aggregates;
 
 namespace Project.API.Controllers.V1;
 
@@ -88,6 +89,36 @@ public class ProductsController : BaseController
     }
 
     /// <summary>
+    /// Create bulk product
+    /// </summary>
+    /// <param name="file">IFormFile</param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>IActionResult</returns>
+    /// CreatedBy: ThiepTT(10/11/2023)
+    [HttpPost]
+    [Route($"{ApiRoutes.Product.CreateBulkProduct}")]
+    [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
+    public async Task<IActionResult> CreateBulkProduct(IFormFile? file, CancellationToken cancellationToken)
+    {
+        string fullName = HttpContext.GetFullName();
+
+        CreateBulkProductCommand command = new CreateBulkProductCommand() { File = file, CreatedBy = fullName };
+
+        OperationResult<string> response = await _mediator.Send(command, cancellationToken);
+
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        string pattern = SystemConfig.GeneratePattern(
+            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{ApiRoutes.Api}",
+            $"{ApiRoutes.Product.GetAllProducts}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Create product
     /// </summary>
     /// <param name="product">ProductRequest</param>
@@ -137,6 +168,34 @@ public class ProductsController : BaseController
         UpdateProductCommand command = _mapper.Map<UpdateProductCommand>(product);
         command.ProductId = id;
         command.UpdatedBy = fullName;
+
+        OperationResult<string> response = await _mediator.Send(command, cancellationToken);
+
+        if (response.IsError) { return HandlerErrorResponse(response.Errors); }
+
+        string pattern = SystemConfig.GeneratePattern(
+           ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+           $"{ApiRoutes.Api}",
+           $"{ApiRoutes.Product.GetAllProducts}");
+
+        await _responseCacheService.RemoveCacheResponseAsync(pattern);
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Delete bulk product
+    /// </summary>
+    /// <param name="listProductId">List Id of product</param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>IActionResult</returns>
+    /// CreatedBy: ThiepTT(10/11/2023)
+    [HttpDelete]
+    [Route($"{ApiRoutes.Product.DeleteBulkProduct}")]
+    [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
+    public async Task<IActionResult> DeleteBulkProduct(List<string>? listProductId, CancellationToken cancellationToken)
+    {
+        DeleteBulkProductCommand command = new DeleteBulkProductCommand() { ListProductId = listProductId! };
 
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
