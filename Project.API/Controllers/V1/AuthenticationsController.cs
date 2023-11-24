@@ -44,7 +44,7 @@ public class AuthenticationsController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(31/10/2023)
     [HttpPost]
-    [Route($"{ApiRoutes.Authentication.Register}")]
+    [Route($"{ApiRoutes.Authentications.Register}")]
     public async Task<IActionResult> Register(RegisterRequest registerRequest, CancellationToken cancellationToken)
     {
         RegisterCommand command = _mapper.Map<RegisterCommand>(registerRequest);
@@ -54,9 +54,9 @@ public class AuthenticationsController : BaseController
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{nameof(ApiRoutes.UserProfiles)}",
             $"{ApiRoutes.Api}",
-            $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+            $"{ApiRoutes.UserProfiles.GetAllUserProfiles}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
@@ -71,7 +71,7 @@ public class AuthenticationsController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(01/11/2023)
     [HttpPost]
-    [Route($"{ApiRoutes.Authentication.Login}")]
+    [Route($"{ApiRoutes.Authentications.Login}")]
     public async Task<IActionResult> Login(LoginRequest loginRequest, CancellationToken cancellationToken)
     {
         LoginCommand command = _mapper.Map<LoginCommand>(loginRequest);

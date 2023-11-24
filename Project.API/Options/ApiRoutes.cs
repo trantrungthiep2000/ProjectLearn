@@ -56,10 +56,10 @@ public static class ApiRoutes
     }
 
     /// <summary>
-    /// Information of authentication
+    /// Information of authentications
     /// CreatedBy: ThiepTT(31/10/2023)
     /// </summary>
-    public class Authentication
+    public class Authentications
     {
         /// <summary>
         /// Register
@@ -73,10 +73,10 @@ public static class ApiRoutes
     }
 
     /// <summary>
-    /// Information of user profile
+    /// Information of user profiles
     /// CreatedBy: ThiepTT(02/11/2023)
     /// </summary>
-    public class UserProfile
+    public class UserProfiles
     {
         /// <summary>
         /// Get all user profiles
@@ -137,10 +137,10 @@ public static class ApiRoutes
     }
 
     /// <summary>
-    /// Information of product
+    /// Information of products
     /// CreatedBy: ThiepTT(07/11/2023)
     /// </summary>
-    public class Product
+    public class Products
     {
         /// <summary>
         /// Get all products

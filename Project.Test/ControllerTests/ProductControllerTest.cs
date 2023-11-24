@@ -1,13 +1,20 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Moq;
 using Project.API.Controllers.V1;
+using Project.API.Options;
+using Project.Application.Dtos.Requests;
 using Project.Application.Dtos.Responses;
+using Project.Application.Messages;
 using Project.Application.Models;
+using Project.Application.Products.Commands;
 using Project.Application.Products.Queries;
 using Project.Application.Services.IServices;
 using Project.Domain.Aggregates;
+using System.Reflection;
 
 namespace Project.Test.ControllerTests;
 
@@ -32,7 +39,7 @@ public class ProductControllerTest
     /// <returns>Task</returns>
     /// CreatedBy: ThiepTT(23/11/2023)
     [Fact]
-    public async Task GetAllProducts_Returns_OkResult()
+    public async Task GetAllProducts_Returns_OkObjectResult()
     {
         // Arrange
         var productResponse = new ProductResponse
@@ -63,12 +70,17 @@ public class ProductControllerTest
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
         OperationResult<IEnumerable<ProductResponse>> model = Assert.IsAssignableFrom<OperationResult<IEnumerable<ProductResponse>>>(okResult.Value);
 
-        Assert.True(!model.IsError);
+        Assert.False(model.IsError);
         Assert.Single(model.Data);
     }
 
+    /// <summary>
+    /// Get product by id returns ok result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(24/11/2023)
     [Fact]
-    public async Task GetProductById_Returns_OkResult()
+    public async Task GetProductById_Returns_OkObjectResult()
     {
         // Arrange
         ProductResponse productResponse = new ProductResponse
@@ -99,7 +111,144 @@ public class ProductControllerTest
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
         OperationResult<ProductResponse> model = Assert.IsAssignableFrom<OperationResult<ProductResponse>>(okResult.Value);
 
-        Assert.True(!model.IsError);
+        Assert.False(model.IsError);
         Assert.Equal("fd03dba4-eef9-44f8-e324-08dbe1bd3015", model.Data.ProductId.ToString());
+    }
+
+    /// <summary>
+    /// Get product by id product not found returns not found object result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(24/11/2023)
+    [Fact]
+    public async Task GetProductById_ProductNotFound_Returns_NotFoundObjectResult()
+    {
+        // Arrange
+        Guid productId = Guid.NewGuid();
+
+        OperationResult<ProductResponse> response = new OperationResult<ProductResponse>();
+        response.AddError(ErrorCode.NotFound, $"No find Product with ID {productId}");
+
+        // Setup the mediator to return the mock response
+        _mediatorMock.Setup(m => m.Send(It.IsAny<GetProductByIdQuery>(), _cancellationToken)).ReturnsAsync(new OperationResult<Product>());
+
+        // Setup the mapper to return the mock response
+        _mapperMock.Setup(m => m.Map<OperationResult<ProductResponse>>(It.IsAny<OperationResult<Product>>())).Returns(response);
+
+        ProductsController productsController = new ProductsController(_mediatorMock.Object, _mapperMock.Object, _responseCacheServiceMock.Object);
+
+        // Act
+        IActionResult result = await productsController.GetProductById(productId.ToString(), _cancellationToken);
+
+        // Assert
+        NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        ErrorResponse model = Assert.IsAssignableFrom<ErrorResponse>(notFoundResult.Value);
+
+        Assert.Equal(404, model.StatusCode);
+        Assert.Equal($"No find Product with ID {productId}", model.Errors[0]);
+    }
+
+    /// <summary>
+    /// Get product by id product not found returns not found object result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(24/11/2023)
+    [Fact]
+    public async Task CreateProduct_Returns_OkObjectResult()
+    {
+        // Arrange
+        ProductRequest product = new ProductRequest()
+        {
+            ProductName = "Name test",
+            Price = 20000000,
+            Description = "Description test"
+        };
+        string fullName = "thiep tran trung";
+        string pattern = SystemConfig.GeneratePattern($"{nameof(ApiRoutes.Products)}", $"{ApiRoutes.Api}", $"{ApiRoutes.Products.GetAllProducts}");
+
+        CreateProductCommand createProductCommand = new CreateProductCommand()
+        {
+            ProductName = product.ProductName,
+            Price = product.Price,
+            Description = product.Description,
+            CreatedBy = fullName,
+        };
+
+        OperationResult<string> response = new OperationResult<string>()
+        {
+            Data = ResponseMessage.Product.CreateProductSuccess,
+        };
+
+        // Setup the mapper to return the mock request
+        _mapperMock.Setup(m => m.Map<CreateProductCommand>(product)).Returns(createProductCommand);
+
+        // Setup the mediator to return the mock response
+        _mediatorMock.Setup(m => m.Send(createProductCommand, _cancellationToken)).ReturnsAsync(response);
+
+        // Setup the response cache service to return mock response
+        _responseCacheServiceMock.Setup(r => r.RemoveCacheResponseAsync(pattern)).Returns(Task.CompletedTask);
+
+        ProductsController productsController = new ProductsController(_mediatorMock.Object, _mapperMock.Object, _responseCacheServiceMock.Object);
+
+        // Act
+        IActionResult result = await productsController.CreateProduct(product, _cancellationToken);
+
+        // Assert
+        OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
+        OperationResult<string> model = Assert.IsAssignableFrom<OperationResult<string>>(okResult.Value);
+
+        Assert.False(model.IsError);
+        Assert.Equal(ResponseMessage.Product.CreateProductSuccess, model.Data);
+    }
+
+    /// <summary>
+    /// Create product product name null retruns bad request object result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(24/11/2023)
+    [Fact]
+    public async Task CreateProduct_ProductName_Null_Returns_BadRequestObjectResult()
+    {
+        // Arrange
+        ProductRequest product = new ProductRequest()
+        {
+            ProductName = null!,
+            Price = 20000000,
+            Description = "Description test"
+        };
+        string fullName = "thiep tran trung";
+        string pattern = SystemConfig.GeneratePattern($"{nameof(ApiRoutes.Products)}", $"{ApiRoutes.Api}", $"{ApiRoutes.Products.GetAllProducts}");
+
+        CreateProductCommand createProductCommand = new CreateProductCommand()
+        {
+            ProductName = product.ProductName!,
+            Price = product.Price,
+            Description = product.Description,
+            CreatedBy = fullName,
+        };
+
+        OperationResult<string> response = new OperationResult<string>();
+        response.AddError(ErrorCode.BadRequest, $"Product name cannot be empty");
+
+        // Setup the mapper to return the mock request
+        _mapperMock.Setup(m => m.Map<CreateProductCommand>(product)).Returns(createProductCommand);
+
+        // Setup the mediator to return the mock response
+        _mediatorMock.Setup(m => m.Send(createProductCommand, _cancellationToken)).ReturnsAsync(response);
+
+        // Setup the response cache service to return mock response
+        _responseCacheServiceMock.Setup(r => r.RemoveCacheResponseAsync(pattern)).Returns(Task.CompletedTask);
+
+        ProductsController productsController = new ProductsController(_mediatorMock.Object, _mapperMock.Object, _responseCacheServiceMock.Object);
+
+        // Act
+        IActionResult result = await productsController.CreateProduct(product, _cancellationToken);
+
+        // Assert
+        BadRequestObjectResult okResult = Assert.IsType<BadRequestObjectResult>(result);
+        ErrorResponse model = Assert.IsAssignableFrom<ErrorResponse>(okResult.Value);
+
+        Assert.Equal(400, model.StatusCode);
+        Assert.Equal("Product name cannot be empty", model.Errors[0]);
     }
 }

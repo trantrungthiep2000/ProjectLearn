@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.API.Attributes;
-using Project.API.Extenstions;
 using Project.API.Options;
 using Project.Application.Dtos.Requests;
 using Project.Application.Models;
@@ -49,7 +48,7 @@ public class UserProfilesController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(06/11/2023)
     [HttpGet]
-    [Route($"{ApiRoutes.UserProfile.GetAllUserProfiles}")]
+    [Route($"{ApiRoutes.UserProfiles.GetAllUserProfiles}")]
     [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     [Cache(ApiRoutes.TimeToLive)]
     public async Task<IActionResult> GetAllUserProfiles(CancellationToken cancellationToken)
@@ -70,7 +69,7 @@ public class UserProfilesController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(06/11/2023)
     [HttpGet]
-    [Route($"{ApiRoutes.UserProfile.GetAllUserProfilesEF}")]
+    [Route($"{ApiRoutes.UserProfiles.GetAllUserProfilesEF}")]
     [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     [Cache(ApiRoutes.TimeToLive)]
     public async Task<IActionResult> GetAllUserProfilesEF(CancellationToken cancellationToken)
@@ -91,7 +90,7 @@ public class UserProfilesController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(06/11/2023)
     [HttpGet]
-    [Route($"{ApiRoutes.UserProfile.GetAllUserProfilesEFAsNoTracking}")]
+    [Route($"{ApiRoutes.UserProfiles.GetAllUserProfilesEFAsNoTracking}")]
     [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     [Cache(ApiRoutes.TimeToLive)]
     public async Task<IActionResult> GetAllUserProfilesEFAsNoTracking(CancellationToken cancellationToken)
@@ -113,7 +112,7 @@ public class UserProfilesController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(03/11/2023)
     [HttpGet]
-    [Route($"{ApiRoutes.UserProfile.GetUserProfileById}")]
+    [Route($"{ApiRoutes.UserProfiles.GetUserProfileById}")]
     [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     [ValidateGuid("userProfileId")]
     public async Task<IActionResult> GetUserProfileById(string? userProfileId, CancellationToken cancellationToken)
@@ -138,7 +137,7 @@ public class UserProfilesController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(02/11/2023)
     [HttpPut]
-    [Route($"{ApiRoutes.UserProfile.UpdateUserProfileById}")]
+    [Route($"{ApiRoutes.UserProfiles.UpdateUserProfileById}")]
     [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     [ValidateGuid("userProfileId")]
     public async Task<IActionResult> UpdateUserProfileById(string? userProfileId, UserProfileRequest userProfile, CancellationToken cancellationToken)
@@ -153,9 +152,9 @@ public class UserProfilesController : BaseController
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{nameof(ApiRoutes.UserProfiles)}",
             $"{ApiRoutes.Api}",
-            $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+            $"{ApiRoutes.UserProfiles.GetAllUserProfiles}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
@@ -170,7 +169,7 @@ public class UserProfilesController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(02/11/2023)
     [HttpDelete]
-    [Route($"{ApiRoutes.UserProfile.RemoveUserProfileById}")]
+    [Route($"{ApiRoutes.UserProfiles.RemoveUserProfileById}")]
     [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     [ValidateGuid("userProfileId")]
     public async Task<IActionResult> RemoveUserProfileById(string? userProfileId, CancellationToken cancellationToken)
@@ -184,9 +183,9 @@ public class UserProfilesController : BaseController
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{nameof(ApiRoutes.UserProfiles)}",
             $"{ApiRoutes.Api}",
-            $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+            $"{ApiRoutes.UserProfiles.GetAllUserProfiles}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
@@ -200,12 +199,10 @@ public class UserProfilesController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(02/11/2023)
     [HttpGet]
-    [Route($"{ApiRoutes.UserProfile.GetInformationOfUserProfile}")]
+    [Route($"{ApiRoutes.UserProfiles.GetInformationOfUserProfile}")]
     public async Task<IActionResult> GetInformationOfUserProfile(CancellationToken cancellationToken)
     {
-        Guid userProfileId = HttpContext.GetUserProfileId();
-
-        GetUserProfileByIdQuery query = new GetUserProfileByIdQuery() { UserProfileId = userProfileId };
+        GetUserProfileByIdQuery query = new GetUserProfileByIdQuery() { UserProfileId = UserProfileId };
 
         OperationResult<UserProfile> response = await _mediator.Send(query, cancellationToken);
 
@@ -222,22 +219,20 @@ public class UserProfilesController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(02/11/2023)
     [HttpPut]
-    [Route($"{ApiRoutes.UserProfile.UpdateInformationOfUserProfile}")]
+    [Route($"{ApiRoutes.UserProfiles.UpdateInformationOfUserProfile}")]
     public async Task<IActionResult> UpdateInformationOfUserProfile(UserProfileRequest userProfile, CancellationToken cancellationToken)
     {
-        Guid userProfileId = HttpContext.GetUserProfileId();
-
         UpdateUserProfileCommand command = _mapper.Map<UpdateUserProfileCommand>(userProfile);
-        command.UserProfileId = userProfileId;
+        command.UserProfileId = UserProfileId;
 
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-             ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+             $"{nameof(ApiRoutes.UserProfiles)}",
              $"{ApiRoutes.Api}",
-             $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+             $"{ApiRoutes.UserProfiles.GetAllUserProfiles}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
@@ -251,21 +246,19 @@ public class UserProfilesController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(02/11/2023)
     [HttpDelete]
-    [Route($"{ApiRoutes.UserProfile.RemoveAccount}")]
+    [Route($"{ApiRoutes.UserProfiles.RemoveAccount}")]
     public async Task<IActionResult> RemoveAccount(CancellationToken cancellationToken)
     {
-        Guid userProfileId = HttpContext.GetUserProfileId();
-
-        RemoveAccountCommand command = new RemoveAccountCommand() { UserProfileId = userProfileId };
+        RemoveAccountCommand command = new RemoveAccountCommand() { UserProfileId = UserProfileId };
 
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{nameof(ApiRoutes.UserProfiles)}",
             $"{ApiRoutes.Api}",
-            $"{ApiRoutes.UserProfile.GetAllUserProfiles}");
+            $"{ApiRoutes.UserProfiles.GetAllUserProfiles}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 

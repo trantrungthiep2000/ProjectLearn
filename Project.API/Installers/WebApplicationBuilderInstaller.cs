@@ -50,6 +50,8 @@ public class WebApplicationBuilderInstaller : IWebApplicationBuilderInstaller
 
         builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
 
+        builder.Services.AddHttpContextAccessor();
+
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
     }
 }

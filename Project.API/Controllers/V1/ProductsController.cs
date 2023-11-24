@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.API.Attributes;
-using Project.API.Extenstions;
 using Project.API.Options;
 using Project.Application.Dtos.Requests;
 using Project.Application.Dtos.Responses;
@@ -11,7 +10,6 @@ using Project.Application.Models;
 using Project.Application.Products.Commands;
 using Project.Application.Products.Queries;
 using Project.Application.Services.IServices;
-using Project.Domain.Aggregates;
 
 namespace Project.API.Controllers.V1;
 
@@ -50,7 +48,7 @@ public class ProductsController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(07/11/2023)
     [HttpGet]
-    [Route($"{ApiRoutes.Product.GetAllProducts}")]
+    [Route($"{ApiRoutes.Products.GetAllProducts}")]
     [Cache(ApiRoutes.TimeToLive)]
     public async Task<IActionResult> GetAllProducts(CancellationToken cancellationToken)
     {
@@ -72,7 +70,7 @@ public class ProductsController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(07/11/2023)
     [HttpGet]
-    [Route($"{ApiRoutes.Product.GetProductById}")]
+    [Route($"{ApiRoutes.Products.GetProductById}")]
     [ValidateGuid("productId")]
     public async Task<IActionResult> GetProductById(string? productId, CancellationToken cancellationToken)
     {
@@ -96,22 +94,20 @@ public class ProductsController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(10/11/2023)
     [HttpPost]
-    [Route($"{ApiRoutes.Product.CreateBulkProduct}")]
+    [Route($"{ApiRoutes.Products.CreateBulkProduct}")]
     [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     public async Task<IActionResult> CreateBulkProduct(IFormFile? file, CancellationToken cancellationToken)
     {
-        string fullName = HttpContext.GetFullName();
-
-        CreateBulkProductCommand command = new CreateBulkProductCommand() { File = file, CreatedBy = fullName };
+        CreateBulkProductCommand command = new CreateBulkProductCommand() { File = file, CreatedBy = FullName };
 
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{nameof(ApiRoutes.Products)}",
             $"{ApiRoutes.Api}",
-            $"{ApiRoutes.Product.GetAllProducts}");
+            $"{ApiRoutes.Products.GetAllProducts}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
@@ -126,22 +122,20 @@ public class ProductsController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(08/11/2023)
     [HttpPost]
-    [Route($"{ApiRoutes.Product.CreateProduct}")]
+    [Route($"{ApiRoutes.Products.CreateProduct}")]
     public async Task<IActionResult> CreateProduct(ProductRequest product, CancellationToken cancellationToken)
     {
-        string fullName = HttpContext.GetFullName();
-
         CreateProductCommand command = _mapper.Map<CreateProductCommand>(product);
-        command.CreatedBy = fullName;
+        command.CreatedBy = FullName;
 
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-            ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+            $"{nameof(ApiRoutes.Products)}",
             $"{ApiRoutes.Api}",
-            $"{ApiRoutes.Product.GetAllProducts}");
+            $"{ApiRoutes.Products.GetAllProducts}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
@@ -157,26 +151,24 @@ public class ProductsController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(08/11/2023)
     [HttpPut]
-    [Route($"{ApiRoutes.Product.UpdateProduct}")]
+    [Route($"{ApiRoutes.Products.UpdateProduct}")]
     [ValidateGuid("productId")]
     public async Task<IActionResult> UpdateProduct(string? productId, ProductRequest product, CancellationToken cancellationToken)
     {
         Guid.TryParse(productId, out Guid id);
 
-        string fullName = HttpContext.GetFullName();
-
         UpdateProductCommand command = _mapper.Map<UpdateProductCommand>(product);
         command.ProductId = id;
-        command.UpdatedBy = fullName;
+        command.UpdatedBy = FullName;
 
         OperationResult<string> response = await _mediator.Send(command, cancellationToken);
 
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-           ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+           $"{nameof(ApiRoutes.Products)}",
            $"{ApiRoutes.Api}",
-           $"{ApiRoutes.Product.GetAllProducts}");
+           $"{ApiRoutes.Products.GetAllProducts}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
@@ -191,7 +183,7 @@ public class ProductsController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(10/11/2023)
     [HttpDelete]
-    [Route($"{ApiRoutes.Product.DeleteBulkProduct}")]
+    [Route($"{ApiRoutes.Products.DeleteBulkProduct}")]
     [JwtAuthorize($"{ApiRoutes.Role.Admin}")]
     public async Task<IActionResult> DeleteBulkProduct(List<string>? listProductId, CancellationToken cancellationToken)
     {
@@ -202,9 +194,9 @@ public class ProductsController : BaseController
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-           ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+           $"{nameof(ApiRoutes.Products)}",
            $"{ApiRoutes.Api}",
-           $"{ApiRoutes.Product.GetAllProducts}");
+           $"{ApiRoutes.Products.GetAllProducts}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
@@ -219,7 +211,7 @@ public class ProductsController : BaseController
     /// <returns>IActionResult</returns>
     /// CreatedBy: ThiepTT(08/11/2023)
     [HttpDelete]
-    [Route($"{ApiRoutes.Product.DeleteProduct}")]
+    [Route($"{ApiRoutes.Products.DeleteProduct}")]
     [ValidateGuid("productId")]
     public async Task<IActionResult> DeleteProduct(string? productId, CancellationToken cancellationToken)
     {
@@ -232,9 +224,9 @@ public class ProductsController : BaseController
         if (response.IsError) { return HandlerErrorResponse(response.Errors); }
 
         string pattern = SystemConfig.GeneratePattern(
-           ControllerContext.ActionDescriptor.ControllerTypeInfo.Name,
+           $"{nameof(ApiRoutes.Products)}",
            $"{ApiRoutes.Api}",
-           $"{ApiRoutes.Product.GetAllProducts}");
+           $"{ApiRoutes.Products.GetAllProducts}");
 
         await _responseCacheService.RemoveCacheResponseAsync(pattern);
 
