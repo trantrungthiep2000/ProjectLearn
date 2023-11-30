@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Moq;
 using Project.API.Controllers.V1;
 using Project.API.Options;
@@ -14,7 +12,6 @@ using Project.Application.Products.Commands;
 using Project.Application.Products.Queries;
 using Project.Application.Services.IServices;
 using Project.Domain.Aggregates;
-using System.Reflection;
 
 namespace Project.Test.ControllerTests;
 
@@ -212,7 +209,7 @@ public class ProductControllerTest
         // Arrange
         ProductRequest product = new ProductRequest()
         {
-            ProductName = null!,
+            ProductName = string.Empty,
             Price = 20000000,
             Description = "Description test"
         };
@@ -221,7 +218,7 @@ public class ProductControllerTest
 
         CreateProductCommand createProductCommand = new CreateProductCommand()
         {
-            ProductName = product.ProductName!,
+            ProductName = product.ProductName,
             Price = product.Price,
             Description = product.Description,
             CreatedBy = fullName,
@@ -250,5 +247,280 @@ public class ProductControllerTest
 
         Assert.Equal(400, model.StatusCode);
         Assert.Equal("Product name cannot be empty", model.Errors[0]);
+    }
+
+    /// <summary>
+    /// Create product product name min character retruns bad request object result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(30/11/2023)
+    [Fact]
+    public async Task CreateProduct_ProductName_MinCharacter_Returns_BadRequestObjectResult()
+    {
+        // Arrange
+        ProductRequest product = new ProductRequest()
+        {
+            ProductName = "a",
+            Price = 20000000,
+            Description = "Description test"
+        };
+        string fullName = "thiep tran trung";
+        string pattern = SystemConfig.GeneratePattern($"{nameof(ApiRoutes.Products)}", $"{ApiRoutes.Api}", $"{ApiRoutes.Products.GetAllProducts}");
+
+        CreateProductCommand createProductCommand = new CreateProductCommand()
+        {
+            ProductName = product.ProductName,
+            Price = product.Price,
+            Description = product.Description,
+            CreatedBy = fullName,
+        };
+
+        OperationResult<string> response = new OperationResult<string>();
+        response.AddError(ErrorCode.BadRequest, $"Product name must be at least 1 character long");
+
+        // Setup the mapper to return the mock request
+        _mapperMock.Setup(m => m.Map<CreateProductCommand>(product)).Returns(createProductCommand);
+
+        // Setup the mediator to return the mock response
+        _mediatorMock.Setup(m => m.Send(createProductCommand, _cancellationToken)).ReturnsAsync(response);
+
+        // Setup the response cache service to return mock response
+        _responseCacheServiceMock.Setup(r => r.RemoveCacheResponseAsync(pattern)).Returns(Task.CompletedTask);
+
+        ProductsController productsController = new ProductsController(_mediatorMock.Object, _mapperMock.Object, _responseCacheServiceMock.Object);
+
+        // Act
+        IActionResult result = await productsController.CreateProduct(product, _cancellationToken);
+
+        // Assert
+        BadRequestObjectResult okResult = Assert.IsType<BadRequestObjectResult>(result);
+        ErrorResponse model = Assert.IsAssignableFrom<ErrorResponse>(okResult.Value);
+
+        Assert.Equal(400, model.StatusCode);
+        Assert.Equal("Product name must be at least 1 character long", model.Errors[0]);
+    }
+
+    /// <summary>
+    /// Create product product name max character retruns bad request object result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(30/11/2023)
+    [Fact]
+    public async Task CreateProduct_ProductName_MaxCharacter_Returns_BadRequestObjectResult()
+    {
+        // Arrange
+        ProductRequest product = new ProductRequest()
+        {
+            ProductName = "abcdefghikabcdefghikabcdefghikabcdefghikabcdefghik",
+            Price = 20000000,
+            Description = "Description test"
+        };
+        string fullName = "thiep tran trung";
+        string pattern = SystemConfig.GeneratePattern($"{nameof(ApiRoutes.Products)}", $"{ApiRoutes.Api}", $"{ApiRoutes.Products.GetAllProducts}");
+
+        CreateProductCommand createProductCommand = new CreateProductCommand()
+        {
+            ProductName = product.ProductName,
+            Price = product.Price,
+            Description = product.Description,
+            CreatedBy = fullName,
+        };
+
+        OperationResult<string> response = new OperationResult<string>();
+        response.AddError(ErrorCode.BadRequest, $"Product name must be at least 1 character long");
+
+        // Setup the mapper to return the mock request
+        _mapperMock.Setup(m => m.Map<CreateProductCommand>(product)).Returns(createProductCommand);
+
+        // Setup the mediator to return the mock response
+        _mediatorMock.Setup(m => m.Send(createProductCommand, _cancellationToken)).ReturnsAsync(response);
+
+        // Setup the response cache service to return mock response
+        _responseCacheServiceMock.Setup(r => r.RemoveCacheResponseAsync(pattern)).Returns(Task.CompletedTask);
+
+        ProductsController productsController = new ProductsController(_mediatorMock.Object, _mapperMock.Object, _responseCacheServiceMock.Object);
+
+        // Act
+        IActionResult result = await productsController.CreateProduct(product, _cancellationToken);
+
+        // Assert
+        BadRequestObjectResult okResult = Assert.IsType<BadRequestObjectResult>(result);
+        ErrorResponse model = Assert.IsAssignableFrom<ErrorResponse>(okResult.Value);
+
+        Assert.Equal(400, model.StatusCode);
+        Assert.Equal("Product name must be at least 1 character long", model.Errors[0]);
+    }
+
+    /// <summary>
+    /// Create product price null returns bad request object result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(30/11/2023)
+    [Fact]
+    public async Task CreateProduct_Price_Null_Returns_BadRequestObjectResult()
+    {
+        // Arrange
+        ProductRequest product = new ProductRequest()
+        {
+            ProductName = "Name test",
+            Price = 0,
+            Description = "Description test"
+        };
+        string fullName = "thiep tran trung";
+        string pattern = SystemConfig.GeneratePattern($"{nameof(ApiRoutes.Products)}", $"{ApiRoutes.Api}", $"{ApiRoutes.Products.GetAllProducts}");
+
+        CreateProductCommand createProductCommand = new CreateProductCommand()
+        {
+            ProductName = product.ProductName,
+            Price = product.Price,
+            Description = product.Description,
+            CreatedBy = fullName,
+        };
+
+        OperationResult<string> response = new OperationResult<string>();
+        response.AddError(ErrorCode.BadRequest, $"Price cannot be empty");
+
+        // Setup the mapper to return the mock request
+        _mapperMock.Setup(m => m.Map<CreateProductCommand>(product)).Returns(createProductCommand);
+
+        // Setup the mediator to return the mock response
+        _mediatorMock.Setup(m => m.Send(createProductCommand, _cancellationToken)).ReturnsAsync(response);
+
+        // Setup the response cache service to return mock response
+        _responseCacheServiceMock.Setup(r => r.RemoveCacheResponseAsync(pattern)).Returns(Task.CompletedTask);
+
+        ProductsController productsController = new ProductsController(_mediatorMock.Object, _mapperMock.Object, _responseCacheServiceMock.Object);
+
+        // Act
+        IActionResult result = await productsController.CreateProduct(product, _cancellationToken);
+
+        // Assert
+        BadRequestObjectResult okResult = Assert.IsType<BadRequestObjectResult>(result);
+        ErrorResponse model = Assert.IsAssignableFrom<ErrorResponse>(okResult.Value);
+
+        Assert.Equal(400, model.StatusCode);
+        Assert.Equal("Price cannot be empty", model.Errors[0]);
+    }
+
+    /// <summary>
+    /// Create product description null returns bad request object result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(30/11/2023)
+    [Fact]
+    public async Task CreateProduct_Description_Null_Returns_BadRequestObjectResult()
+    {
+        // Arrange
+        ProductRequest product = new ProductRequest()
+        {
+            ProductName = "Name test",
+            Price = 0,
+            Description = string.Empty
+        };
+        string fullName = "thiep tran trung";
+        string pattern = SystemConfig.GeneratePattern($"{nameof(ApiRoutes.Products)}", $"{ApiRoutes.Api}", $"{ApiRoutes.Products.GetAllProducts}");
+
+        CreateProductCommand createProductCommand = new CreateProductCommand()
+        {
+            ProductName = product.ProductName,
+            Price = product.Price,
+            Description = product.Description,
+            CreatedBy = fullName,
+        };
+
+        OperationResult<string> response = new OperationResult<string>();
+        response.AddError(ErrorCode.BadRequest, $"Price cannot be empty");
+
+        // Setup the mapper to return the mock request
+        _mapperMock.Setup(m => m.Map<CreateProductCommand>(product)).Returns(createProductCommand);
+
+        // Setup the mediator to return the mock response
+        _mediatorMock.Setup(m => m.Send(createProductCommand, _cancellationToken)).ReturnsAsync(response);
+
+        // Setup the response cache service to return mock response
+        _responseCacheServiceMock.Setup(r => r.RemoveCacheResponseAsync(pattern)).Returns(Task.CompletedTask);
+
+        ProductsController productsController = new ProductsController(_mediatorMock.Object, _mapperMock.Object, _responseCacheServiceMock.Object);
+
+        // Act
+        IActionResult result = await productsController.CreateProduct(product, _cancellationToken);
+
+        // Assert
+        BadRequestObjectResult okResult = Assert.IsType<BadRequestObjectResult>(result);
+        ErrorResponse model = Assert.IsAssignableFrom<ErrorResponse>(okResult.Value);
+
+        Assert.Equal(400, model.StatusCode);
+        Assert.Equal("Price cannot be empty", model.Errors[0]);
+    }
+
+    /// <summary>
+    /// Delete product returns ok object result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(30/11/2023)
+    [Fact]
+    public async Task DeleteProduct_Returns_OkObjectResult()
+    {
+        // Arrange
+        Guid productId = Guid.Parse("fd03dba4-eef9-44f8-e324-08dbe1bd3015");
+        string pattern = SystemConfig.GeneratePattern($"{nameof(ApiRoutes.Products)}", $"{ApiRoutes.Api}", $"{ApiRoutes.Products.GetAllProducts}");
+
+        OperationResult<string> response = new OperationResult<string> { Data = ResponseMessage.Product.DeleteProductSuccess };
+
+        DeleteProductCommand deleteProductCommand = new DeleteProductCommand() { ProductId = productId };
+
+        // Setup the mediator to return the mock response
+        _mediatorMock.Setup(m => m.Send(It.IsAny<DeleteProductCommand>(), _cancellationToken)).ReturnsAsync(response);
+
+        // Setup the response cache service to return mock response
+        _responseCacheServiceMock.Setup(r => r.RemoveCacheResponseAsync(pattern)).Returns(Task.CompletedTask);
+
+        ProductsController productsController = new ProductsController(_mediatorMock.Object, _mapperMock.Object, _responseCacheServiceMock.Object);
+
+        // Act
+        IActionResult result = await productsController.DeleteProduct(productId.ToString(), _cancellationToken);
+
+        // Assert
+        OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
+        OperationResult<string> model = Assert.IsAssignableFrom<OperationResult<string>>(okResult.Value);
+
+        Assert.False(model.IsError);
+        Assert.Equal(ResponseMessage.Product.DeleteProductSuccess, model.Data.ToString());
+    }
+
+    /// <summary>
+    /// Delete product product not found returns not found object result
+    /// </summary>
+    /// <returns>Task</returns>
+    /// CreatedBy: ThiepTT(30/11/2023)
+    [Fact]
+    public async Task DeleteProduct_ProductNotFound_Returns_NotFoundObjectResult()
+    {
+        // Arrange
+        Guid productId = Guid.NewGuid();
+        string pattern = SystemConfig.GeneratePattern($"{nameof(ApiRoutes.Products)}", $"{ApiRoutes.Api}", $"{ApiRoutes.Products.GetAllProducts}");
+
+        DeleteProductCommand deleteProductCommand = new DeleteProductCommand() { ProductId = productId };
+
+        OperationResult<string> response = new OperationResult<string>();
+        response.AddError(ErrorCode.NotFound, $"No find Product with ID {productId}");
+
+        // Setup the mediator to return the mock response
+        _mediatorMock.Setup(m => m.Send(It.IsAny<DeleteProductCommand>(), _cancellationToken)).ReturnsAsync(response);
+
+        // Setup the response cache service to return mock response
+        _responseCacheServiceMock.Setup(r => r.RemoveCacheResponseAsync(pattern)).Returns(Task.CompletedTask);
+
+        ProductsController productsController = new ProductsController(_mediatorMock.Object, _mapperMock.Object, _responseCacheServiceMock.Object);
+
+        // Act
+        IActionResult result = await productsController.DeleteProduct(productId.ToString(), _cancellationToken);
+
+        // Assert
+        NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        ErrorResponse model = Assert.IsAssignableFrom<ErrorResponse>(notFoundResult.Value);
+
+        Assert.Equal(404, model.StatusCode);
+        Assert.Equal($"No find Product with ID {productId}", model.Errors[0]);
     }
 }
