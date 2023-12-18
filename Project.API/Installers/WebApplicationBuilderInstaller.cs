@@ -1,6 +1,6 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
+﻿using Asp.Versioning;
+using Carter;
+using MediatR;
 using OfficeOpenXml;
 using Project.API.Options;
 using System.Reflection;
@@ -22,15 +22,16 @@ public class WebApplicationBuilderInstaller : IWebApplicationBuilderInstaller
     {
         builder.Services.AddControllers();
 
+        builder.Services.AddCarter();
+
         builder.Services.AddApiVersioning(config =>
         {
             config.DefaultApiVersion = new ApiVersion(1, 0);
             config.AssumeDefaultVersionWhenUnspecified = true;
             config.ReportApiVersions = true;
             config.ApiVersionReader = new UrlSegmentApiVersionReader();
-        });
-
-        builder.Services.AddVersionedApiExplorer(config =>
+        })
+        .AddApiExplorer(config =>
         {
             config.GroupNameFormat = "'v'VVV";
             config.SubstituteApiVersionInUrl = true;
@@ -38,13 +39,13 @@ public class WebApplicationBuilderInstaller : IWebApplicationBuilderInstaller
 
         builder.Services.AddEndpointsApiExplorer();
 
+        builder.Services.ConfigureOptions<ConfigSwaggerOptions>();
+
         builder.Services.AddSwaggerGen(options =>
         {
             string xmlFile = Path.ChangeExtension(Assembly.GetEntryAssembly()!.Location, ".xml");
             options.IncludeXmlComments(xmlFile);
         });
-
-        builder.Services.ConfigureOptions<ConfigSwagger>();
 
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

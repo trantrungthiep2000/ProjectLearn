@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+﻿using Asp.Versioning.ApiExplorer;
+using Carter;
 using Project.API.Middlewares;
 
 namespace Project.API.Installers;
@@ -18,6 +19,8 @@ public class WebApplicationInstaller : IWebApplicationInstaller
     {
         app.UseMiddleware<ExceptionMiddleware>();
 
+        app.MapCarter();
+
         app.UseSwagger();
 
         app.UseSwaggerUI(options =>
@@ -27,8 +30,9 @@ public class WebApplicationInstaller : IWebApplicationInstaller
             foreach (ApiVersionDescription description in provider.ApiVersionDescriptions)
             {
                 options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Project {description.ApiVersion}");
-                options.RoutePrefix = string.Empty;
             }
+
+            options.RoutePrefix = string.Empty;
         });
 
         app.UseHttpsRedirection();

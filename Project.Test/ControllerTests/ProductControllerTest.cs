@@ -15,6 +15,10 @@ using Project.Domain.Aggregates;
 
 namespace Project.Test.ControllerTests;
 
+/// <summary>
+/// Information of product controller test
+/// CreatedBy: ThiepTT(12/12/2023)
+/// </summary>
 public class ProductControllerTest
 {
     private readonly Mock<IMediator> _mediatorMock;

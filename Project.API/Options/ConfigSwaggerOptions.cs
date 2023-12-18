@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
+﻿using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -10,7 +10,7 @@ namespace Project.API.Options;
 /// Information of config swagger
 /// CreatedBy: ThiepTT(31/10/2023)
 /// </summary>
-public class ConfigSwagger : IConfigureOptions<SwaggerGenOptions>
+public class ConfigSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
     private readonly IApiVersionDescriptionProvider _provider;
 
@@ -19,7 +19,7 @@ public class ConfigSwagger : IConfigureOptions<SwaggerGenOptions>
     /// </summary>
     /// <param name="provider">IApiVersionDescriptionProvider</param>
     /// CreatedBy: ThiepTT(07/11/2023)
-    public ConfigSwagger(IApiVersionDescriptionProvider provider)
+    public ConfigSwaggerOptions(IApiVersionDescriptionProvider provider)
     {
         _provider = provider;
     }

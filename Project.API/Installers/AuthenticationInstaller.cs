@@ -49,6 +49,8 @@ public class AuthenticationInstaller : IWebApplicationBuilderInstaller
                 options.Audience = jwtSettings.Audiences[0];
                 options.ClaimsIssuer = jwtSettings.Issuer;
             });
+
+        builder.Services.AddAuthorization();
     }
 
     /// <summary>
