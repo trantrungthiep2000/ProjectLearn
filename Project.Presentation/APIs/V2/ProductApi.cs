@@ -65,7 +65,6 @@ public class ProductApi : BaseApi, ICarterModule
     /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>IResult</returns>
     /// CreatedBy: ThiepTT(11/12/2023)
-    [ValidateGuid("productId")]
     public async Task<IResult> GetProductById(string? productId, IMapper mapper, IMediator mediator, CancellationToken cancellationToken)
     {
         Guid.TryParse(productId, out Guid id);
