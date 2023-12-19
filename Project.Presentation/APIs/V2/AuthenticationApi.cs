@@ -3,7 +3,6 @@ using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Project.Application.Dtos.Requests;
 using Project.Application.Identities.Commands;

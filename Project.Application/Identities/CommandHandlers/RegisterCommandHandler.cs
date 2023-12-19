@@ -23,22 +23,19 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
     private readonly IMapper _mapper;
     private readonly IUserProfileRepository<UserProfile> _userProfileRepository;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly IIdentityUserRepository<IdentityUser> _identityUserRepository;
 
     public RegisterCommandHandler(
         IUnitOfWork unitOfWork,
         UserManager<IdentityUser> userManager,
         IMapper mapper,
         IUserProfileRepository<UserProfile> userProfileRepository,
-        RoleManager<IdentityRole> roleManager,
-        IIdentityUserRepository<IdentityUser> identityUserRepository)
+        RoleManager<IdentityRole> roleManager)
     {
         _unitOfWork = unitOfWork;
         _userManager = userManager;
         _mapper = mapper;
         _userProfileRepository = userProfileRepository;
         _roleManager = roleManager;
-        _identityUserRepository = identityUserRepository;
     }
 
     /// <summary>
@@ -148,7 +145,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
     private async Task CreateIdentityUserAsync(RegisterCommand request, OperationResult<string> result,
         IDbContextTransaction transaction, CancellationToken cancellationToken)
     {
-        IdentityUser identityUser = new IdentityUser() { Email = request.Email, UserName = request.Email };
+        IdentityUser identityUser = new IdentityUser() { Email = request.Email, UserName = request.Email, PhoneNumber = request.PhoneNumber };
 
         IdentityResult identityUserCreate = await _userManager.CreateAsync(identityUser, request.Password);
 
@@ -187,7 +184,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Operation
     /// CreatedBy: ThiepTT(06/11/2023)
     public async Task<bool> AssignRoleAsync(string email, string roleName, OperationResult<string> result)
     {
-        var userByEmail = await _identityUserRepository.GetUserByEmailAsync(email);
+        var userByEmail = await _userManager.FindByEmailAsync(email);
 
         if (userByEmail is null)
         {
