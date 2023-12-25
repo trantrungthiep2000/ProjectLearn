@@ -4,7 +4,8 @@ using Project.Application.Messages;
 using Project.Application.Models;
 using Project.Application.Products.Commands;
 using Project.Domain.Aggregates;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IRepositories;
+using Project.Domain.Interfaces.IServices;
 
 namespace Project.Application.Products.CommandHandlers;
 

@@ -1,4 +1,4 @@
-﻿namespace Project.Infrastructure.Interfaces;
+﻿namespace Project.Domain.Interfaces.IRepositories;
 
 /// <summary>
 /// Information of interface base repository

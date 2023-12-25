@@ -6,7 +6,7 @@ using Project.API.Options;
 using Project.Application.Dtos.Requests;
 using Project.Application.Identities.Commands;
 using Project.Application.Models;
-using Project.Application.Services.IServices;
+using Project.Domain.Interfaces.IServices;
 
 namespace Project.API.Controllers.V1;
 

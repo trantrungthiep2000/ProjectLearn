@@ -2,7 +2,7 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Project.DAL.Data;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IRepositories;
 using System.Data;
 
 namespace Project.Infrastructure.Repositories;

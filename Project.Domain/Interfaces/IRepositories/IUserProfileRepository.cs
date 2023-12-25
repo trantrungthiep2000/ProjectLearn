@@ -1,17 +1,17 @@
-﻿namespace Project.Infrastructure.Interfaces;
+﻿namespace Project.Domain.Interfaces.IRepositories;
 
 /// <summary>
-/// Information of interface identity user repository
+/// Information of interface user profile repository
 /// CreatedBy: ThiepTT(03/11/2023)
 /// </summary>
 /// <typeparam name="E">Entity</typeparam>
-public interface IIdentityUserRepository<E> : IBaseRepository<E> where E : class
+public interface IUserProfileRepository<E> : IBaseRepository<E> where E : class
 {
     /// <summary>
-    /// Get user by email
+    /// Get user profile by email
     /// </summary>
     /// <param name="email">Email</param>
     /// <returns>Information of entity</returns>
     /// CreatedBy: ThiepTT(03/11/2023)
-    public Task<E> GetUserByEmailAsync(string email);
+    public Task<E> GetUserProfileByEmail(string email);
 }

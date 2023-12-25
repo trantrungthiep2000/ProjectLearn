@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project.DAL.Data;
-using Project.Domain.Aggregates;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IRepositories;
 using System.Data;
 using System.Data.SqlClient;
 

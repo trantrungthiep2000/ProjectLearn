@@ -1,4 +1,4 @@
-﻿namespace Project.Application.Services.IServices;
+﻿namespace Project.Domain.Interfaces.IServices;
 
 /// <summary>
 /// Information of interface response cache service

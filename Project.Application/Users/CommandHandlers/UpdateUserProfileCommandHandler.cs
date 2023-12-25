@@ -6,7 +6,8 @@ using Project.Application.Models;
 using Project.Application.Users.Commands;
 using Project.Application.Validators;
 using Project.Domain.Aggregates;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IRepositories;
+using Project.Domain.Interfaces.IServices;
 
 namespace Project.Application.Users.CommandHandlers;
 

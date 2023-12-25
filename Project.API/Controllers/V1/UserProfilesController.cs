@@ -7,10 +7,10 @@ using Project.API.Attributes;
 using Project.API.Options;
 using Project.Application.Dtos.Requests;
 using Project.Application.Models;
-using Project.Application.Services.IServices;
 using Project.Application.Users.Commands;
 using Project.Application.Users.Queries;
 using Project.Domain.Aggregates;
+using Project.Domain.Interfaces.IServices;
 
 namespace Project.API.Controllers.V1;
 

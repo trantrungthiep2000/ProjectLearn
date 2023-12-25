@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Project.Infrastructure.Interfaces;
+namespace Project.Domain.Interfaces.IServices;
 
 /// <summary>
 /// Information of interface unit of work

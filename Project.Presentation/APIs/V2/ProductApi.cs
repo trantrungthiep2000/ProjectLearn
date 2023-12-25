@@ -10,7 +10,7 @@ using Project.Application.Dtos.Responses;
 using Project.Application.Models;
 using Project.Application.Products.Commands;
 using Project.Application.Products.Queries;
-using Project.Application.Services.IServices;
+using Project.Domain.Interfaces.IServices;
 using Project.Presentation.Options;
 
 namespace Project.Presentation.APIs.V2;

@@ -3,14 +3,13 @@ using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Project.Application.Dtos.Requests;
 using Project.Application.Models;
-using Project.Application.Services.IServices;
 using Project.Application.Users.Commands;
 using Project.Application.Users.Queries;
 using Project.Domain.Aggregates;
+using Project.Domain.Interfaces.IServices;
 using Project.Presentation.Options;
 
 namespace Project.Presentation.APIs.V2;

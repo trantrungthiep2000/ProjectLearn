@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using Project.DAL.Data;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IServices;
 
-namespace Project.Infrastructure.Repositories;
+namespace Project.Application.Services;
 
 /// <summary>
 /// Information of unit of work

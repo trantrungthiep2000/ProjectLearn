@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Project.Application.Services.IServices;
+using Project.Domain.Interfaces.IServices;
 using StackExchange.Redis;
 
 namespace Project.Application.Services;

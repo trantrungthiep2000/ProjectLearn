@@ -6,8 +6,8 @@ using Moq;
 using Project.Application.Dtos.Responses;
 using Project.Application.Models;
 using Project.Application.Products.Queries;
-using Project.Application.Services.IServices;
 using Project.Domain.Aggregates;
+using Project.Domain.Interfaces.IServices;
 using Project.Presentation.APIs.V2;
 
 namespace Project.Test.APITests;

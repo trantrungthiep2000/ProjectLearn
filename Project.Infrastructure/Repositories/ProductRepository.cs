@@ -1,6 +1,6 @@
 ﻿using Project.DAL.Data;
 using Project.Domain.Aggregates;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IRepositories;
 
 namespace Project.Infrastructure.Repositories;
 

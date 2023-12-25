@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project.DAL.Data;
 using Project.Domain.Aggregates;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IRepositories;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -14,9 +14,7 @@ namespace Project.Infrastructure.Repositories;
 /// </summary>
 public class UserProfileRepository : BaseRepository<UserProfile>, IUserProfileRepository<UserProfile>
 {
-    public UserProfileRepository(DataContext dataContext) : base(dataContext)
-    {
-    }
+    public UserProfileRepository(DataContext dataContext) : base(dataContext) { }
 
     /// <summary>
     /// Get user profile by email

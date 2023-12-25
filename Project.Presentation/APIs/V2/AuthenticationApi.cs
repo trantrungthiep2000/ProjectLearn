@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Project.Application.Dtos.Requests;
 using Project.Application.Identities.Commands;
 using Project.Application.Models;
-using Project.Application.Services.IServices;
+using Project.Domain.Interfaces.IServices;
 using Project.Presentation.Options;
 
 namespace Project.Presentation.APIs.V2;

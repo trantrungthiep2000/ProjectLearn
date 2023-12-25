@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Project.API.Options;
 using Project.Application.Models;
-using Project.Application.Services.IServices;
+using Project.Domain.Interfaces.IServices;
 using System.Text;
 
 namespace Project.API.Attributes;

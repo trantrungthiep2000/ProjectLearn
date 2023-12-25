@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Project.Application.Services;
 using Project.Domain.Aggregates;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IRepositories;
+using Project.Domain.Interfaces.IServices;
 using Project.Infrastructure.Repositories;
 
 namespace Project.API.Installers;

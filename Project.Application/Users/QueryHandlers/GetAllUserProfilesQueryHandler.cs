@@ -2,7 +2,7 @@
 using Project.Application.Models;
 using Project.Application.Users.Queries;
 using Project.Domain.Aggregates;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IRepositories;
 
 namespace Project.Application.Users.QueryHandlers;
 

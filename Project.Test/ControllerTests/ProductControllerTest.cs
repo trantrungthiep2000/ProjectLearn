@@ -10,8 +10,8 @@ using Project.Application.Messages;
 using Project.Application.Models;
 using Project.Application.Products.Commands;
 using Project.Application.Products.Queries;
-using Project.Application.Services.IServices;
 using Project.Domain.Aggregates;
+using Project.Domain.Interfaces.IServices;
 
 namespace Project.Test.ControllerTests;
 

@@ -1,6 +1,6 @@
 ﻿using Project.Application.Models;
 using Project.Application.Services;
-using Project.Application.Services.IServices;
+using Project.Domain.Interfaces.IServices;
 using StackExchange.Redis;
 
 namespace Project.API.Installers;

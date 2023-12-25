@@ -8,7 +8,8 @@ using Project.Application.Models;
 using Project.Application.Services;
 using Project.Application.Validators;
 using Project.Domain.Aggregates;
-using Project.Infrastructure.Interfaces;
+using Project.Domain.Interfaces.IRepositories;
+using Project.Domain.Interfaces.IServices;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
