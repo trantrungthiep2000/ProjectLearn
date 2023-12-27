@@ -19,8 +19,7 @@ public class CacheInstaller : IWebApplicationBuilderInstaller
     public void InstallerWebApplicationBuilder(WebApplicationBuilder builder)
     {
         RedisConfiguration redisConfiguration = new RedisConfiguration();
-        redisConfiguration.Enabled = Convert.ToBoolean(builder.Configuration["RedisConfiguration:Enabled"]!);
-        redisConfiguration.ConnectionString = builder.Configuration["RedisConfiguration:ConnectionString"]!;
+        builder.Configuration.Bind(nameof(RedisConfiguration), redisConfiguration);
 
         builder.Services.AddSingleton(redisConfiguration);
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Project.Application.Models;
 using Project.DAL.Data;
 
 namespace Project.API.Installers;
@@ -17,8 +18,9 @@ public class DatabaseInstaller : IWebApplicationBuilderInstaller
     /// CreatedBy: ThiepTT(30/10/2023)
     public void InstallerWebApplicationBuilder(WebApplicationBuilder builder)
     {
-        var connectionStrings = builder.Configuration.GetConnectionString("DefaultConnection");
-        builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionStrings));
+        ConnectionStrings connectionStrings = new ConnectionStrings();
+        builder.Configuration.Bind(nameof(ConnectionStrings), connectionStrings);
+        builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionStrings.DefaultConnection));
 
         builder.Services.AddIdentityCore<IdentityUser>(options =>
         {
